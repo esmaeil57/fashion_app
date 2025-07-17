@@ -9,5 +9,10 @@ class AppConstants {
     'Baby Doll',
     'Backpacks',
     'Backpacks',
+    'Accessories',
+    'Accessories',
+    'Activewear',
+    'Baby Doll',
+    'Backpacks'
   ];
 }

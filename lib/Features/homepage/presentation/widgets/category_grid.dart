@@ -8,16 +8,20 @@ class CategoryGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Define how many items per row
-    const int itemsPerRow = 6;
+        // Calculate items per row dynamically (at least 1 to avoid division by zero)
+    final int itemsPerRow = (categories.length / 2).ceil().clamp(1, categories.length);
 
     // Split categories into chunks (rows)
     final List<List<ProductCategory>> rows = [];
     for (int i = 0; i < categories.length; i += itemsPerRow) {
-      rows.add(categories.sublist(
-        i,
-        i + itemsPerRow > categories.length ? categories.length : i + itemsPerRow,
-      ));
+      rows.add(
+        categories.sublist(
+          i,
+          i + itemsPerRow > categories.length
+              ? categories.length
+              : i + itemsPerRow,
+        ),
+      );
     }
 
     return Column(
@@ -56,21 +60,16 @@ class CategoryItem extends StatelessWidget {
     return Column(
       children: [
         Container(
-          width: 70,
-          height: 70,
-          decoration:  BoxDecoration(
-            shape: BoxShape.circle,
-          ),
+          width: 80,
+          height: 80,
+          decoration: BoxDecoration(shape: BoxShape.circle),
           child: ClipOval(
-            child: Image.asset(
-              category.iconPath,
-              fit: BoxFit.cover,
-            ),
+            child: Image.asset(category.iconPath, fit: BoxFit.cover),
           ),
         ),
         const SizedBox(height: 6),
         SizedBox(
-          width: 70,
+          width: 80,
           child: Text(
             category.name,
             style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w500),
