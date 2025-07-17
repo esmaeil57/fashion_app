@@ -1,4 +1,4 @@
-import 'package:fashion/Features/presentation/cubit/home_state.dart';
+import 'package:fashion/Features/homepage/presentation/cubit/home_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../domain/usecase/get_categories_usecase.dart';
 

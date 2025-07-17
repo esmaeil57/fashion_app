@@ -7,12 +7,12 @@ class ProductBannerItem extends StatelessWidget {
   final String? extra;
 
   const ProductBannerItem({
-    Key? key,
+    super.key,
     required this.imageUrl,
     required this.title,
     required this.subtitle,
     this.extra,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

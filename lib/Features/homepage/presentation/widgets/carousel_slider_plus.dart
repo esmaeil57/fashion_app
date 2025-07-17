@@ -45,7 +45,7 @@ class _VerticalSliderState extends State<VerticalSlider> {
                 },
               ),
               items: imagePaths.map((imagePath) {
-                return Container(
+                return SizedBox(
                   width: double.infinity,
                   child: Image.asset(
                     imagePath,

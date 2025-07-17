@@ -4,7 +4,7 @@ import '../../domain/entities/product_category.dart';
 class CategoryGrid extends StatelessWidget {
   final List<ProductCategory> categories;
 
-  const CategoryGrid({Key? key, required this.categories}) : super(key: key);
+  const CategoryGrid({super.key, required this.categories});
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +49,7 @@ class CategoryGrid extends StatelessWidget {
 class CategoryItem extends StatelessWidget {
   final ProductCategory category;
 
-  const CategoryItem({Key? key, required this.category}) : super(key: key);
+  const CategoryItem({super.key, required this.category});
 
   @override
   Widget build(BuildContext context) {

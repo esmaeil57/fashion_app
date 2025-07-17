@@ -1,13 +1,15 @@
-import 'package:fashion/Features/presentation/cubit/navigation_cubit.dart';
+import 'package:fashion/Features/mainpage/presentation/cubit/navigation_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'core/bottom_nav_bar.dart';
+import 'Features/mainpage/presentation/widgets/bottom_nav_bar.dart';
 
 void main() {
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
