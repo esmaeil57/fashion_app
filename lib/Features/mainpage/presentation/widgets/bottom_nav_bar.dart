@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../cubit/navigation_cubit.dart';
 import '../cubit/navigation_state.dart';
-import '../../../homepage/presentation/pages/basket_page.dart';
-import '../../../homepage/presentation/pages/categories_page.dart';
-import '../../../homepage/presentation/pages/favourites_page.dart';
+import '../../../mybasket/presentation/pages/basket_page.dart';
+import '../../../categories/presentation/pages/categories_page.dart';
+import '../../../favorites/presentation/pages/favourites_page.dart';
 import '../../../homepage/presentation/pages/home_page.dart';
-import '../../../homepage/presentation/pages/profile_page.dart';
+import '../../../profile/presentation/pages/profile_page.dart';
 
 class MainPage extends StatelessWidget {
   final List<Widget> _pages = [
