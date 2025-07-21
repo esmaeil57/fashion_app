@@ -1,3 +1,4 @@
+import 'package:fashion/core/common_widgets/shimmer_widget.dart'; 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../cubit/product_cubit.dart';
@@ -14,7 +15,14 @@ class ProductListView extends StatelessWidget {
     return BlocBuilder<ProductCubit, ProductState>(
       builder: (_, state) {
         if (state is ProductLoading) {
-          return const Center(child: CircularProgressIndicator());
+          return BlocBuilder<ProductCubit, ProductState>(
+            builder: (context, prevState) {
+              final isGridView = prevState is ProductLoaded ? prevState.isGridView : true;
+              return isGridView 
+                ? const ProductGridShimmerLoading() 
+                : const ProductListShimmerLoading();
+            },
+          );
         }
 
         if (state is ProductError) {
