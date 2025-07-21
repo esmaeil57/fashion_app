@@ -22,7 +22,7 @@ class ProductBannerItem extends StatelessWidget {
         borderRadius: BorderRadius.circular(15),
         image: DecorationImage(
           image: NetworkImage(imageUrl),
-          fit: BoxFit.cover,
+          fit: BoxFit.fill,
         ),
       ),
       child: Container(
