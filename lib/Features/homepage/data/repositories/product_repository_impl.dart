@@ -27,4 +27,15 @@ class ProductRepositoryImpl implements ProductRepository {
 
     return categories;
   }
+  
+  @override
+  getProductsByCategory(String categoryId) {
+    throw UnimplementedError();
+  }
+  
+  @override
+  searchProducts(String query) {
+    throw UnimplementedError();
+  }
+
 }

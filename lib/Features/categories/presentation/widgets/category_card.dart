@@ -1,6 +1,6 @@
 import 'package:fashion/Features/categories/presentation/widgets/fig_logo.dart';
 import 'package:flutter/material.dart';
-
+import '../../../products/presentation/pages/products_page.dart';
 import '../../domain/entities/category.dart';
 
 class CategoryCard extends StatelessWidget {
@@ -12,6 +12,18 @@ class CategoryCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+        child: InkWell(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ProductsPage(
+                categoryId: category.id,
+                categoryName: category.name,
+              ),
+            ),
+          );
+        },
       child: Card(
         elevation: 0,
         shape: RoundedRectangleBorder(
@@ -39,6 +51,6 @@ class CategoryCard extends StatelessWidget {
           ),
         ),
       ),
-    );
+    ));
   }
 }
