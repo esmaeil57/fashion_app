@@ -36,7 +36,13 @@ dependencies:
   cupertino_icons: ^1.0.8
   flutter_bloc: ^9.1.1
   carousel_slider_plus: ^7.1.1
-
+  dio: ^5.8.0+1
+  dartz: ^0.10.1
+  dio_adapter: ^2.1.2
+  internet_connection_checker: ^3.0.1
+  get_it: ^8.0.3
+  easy_localization: ^3.0.7+1
+  flutter_screenutil: ^5.9.3
 dev_dependencies:
   flutter_test:
     sdk: flutter
