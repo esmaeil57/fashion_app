@@ -10,9 +10,13 @@ import '../widgets/signup_form.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
-
+  
   @override
-  _ProfilePageState createState() => _ProfilePageState();
+  State<StatefulWidget> createState() {
+    return _ProfilePageState();
+      }
+
+  
 }
 
 class _ProfilePageState extends State<ProfilePage> {

@@ -4,10 +4,29 @@ import '../cubit/product_cubit.dart';
 import '../cubit/product_state.dart';
 import 'product_card.dart';
 
-class ProductListView extends StatelessWidget {
+class ProductListView extends StatefulWidget {
   final String categoryId;
 
   const ProductListView({super.key, required this.categoryId});
+
+  @override
+  State<ProductListView> createState() => _ProductListViewState();
+}
+
+class _ProductListViewState extends State<ProductListView> {
+  @override
+  void initState() {
+    super.initState();
+    // Trigger loading when this widget is inserted in the tree
+    Future.microtask(() {
+      final cubit = context.read<ProductCubit>();
+      if (widget.categoryId == 'all') {
+        cubit.loadAllProducts();
+      } else {
+        cubit.loadProducts(widget.categoryId);
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +44,14 @@ class ProductListView extends StatelessWidget {
                 Text('Error: ${state.message}', style: const TextStyle(color: Colors.red)),
                 const SizedBox(height: 16),
                 ElevatedButton(
-                  onPressed: () => context.read<ProductCubit>().loadProducts(categoryId),
+                  onPressed: () {
+                    final cubit = context.read<ProductCubit>();
+                    if (widget.categoryId == 'all') {
+                      cubit.loadAllProducts();
+                    } else {
+                      cubit.loadProducts(widget.categoryId);
+                    }
+                  },
                   child: const Text('Retry'),
                 ),
               ],

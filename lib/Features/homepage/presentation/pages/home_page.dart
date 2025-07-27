@@ -1,4 +1,4 @@
-import 'package:fashion/Features/homepage/presentation/widgets/carousel_slider_plus.dart';
+import 'package:fashion/features/homepage/presentation/widgets/carousel_slider_plus.dart';
 import 'package:fashion/core/common_widgets/search_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

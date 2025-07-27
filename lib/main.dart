@@ -1,7 +1,7 @@
-import 'package:fashion/Features/mainpage/presentation/cubit/navigation_cubit.dart';
+import 'package:fashion/features/mainpage/presentation/cubit/navigation_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'Features/mainpage/presentation/widgets/bottom_nav_bar.dart';
+import 'package:fashion/features/mainpage/presentation/widgets/bottom_nav_bar.dart';
 
 void main() {
   runApp(MyApp());

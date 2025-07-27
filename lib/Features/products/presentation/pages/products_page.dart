@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:fashion/Features/products/presentation/cubit/product_cubit.dart';
-import 'package:fashion/Features/products/data/repositories/product_repository_impl.dart';
-import 'package:fashion/Features/products/domain/usecase/get_products.dart';
+import 'package:fashion/features/products/presentation/cubit/product_cubit.dart';
+import 'package:fashion/features/products/data/repositories/product_repository_impl.dart';
+import 'package:fashion/features/products/domain/usecase/get_products.dart';
 import '../widgets/products_app_bar.dart';
 import '../widgets/sort_and_view_toggle.dart';
 import '../widgets/product_list_view.dart';
@@ -33,7 +33,8 @@ class _ProductsPageState extends State<ProductsPage> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => ProductCubit(
+      create: (_) => ProductCubit(  
+        getAllProducts: GetAllProducts(ProductRepositoryImpl()),
         getProducts: GetProducts(ProductRepositoryImpl()),
         searchProducts: SearchProducts(ProductRepositoryImpl()),
       )..loadProducts(widget.categoryId),
@@ -48,7 +49,7 @@ class _ProductsPageState extends State<ProductsPage> {
             Divider(color: Colors.grey[300], thickness: 1),
             SortAndViewToggle(),
             Divider( color: Colors.grey[300], thickness: 1),
-            Expanded(child: ProductListView(categoryId:widget.categoryId ),),
+            Expanded(child: ProductListView(categoryId: widget.categoryId ,),),
           ],
         ),
       ),

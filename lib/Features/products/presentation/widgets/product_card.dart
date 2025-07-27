@@ -1,4 +1,4 @@
-import 'package:fashion/Features/products/presentation/widgets/product_quick_review.dart';
+import 'package:fashion/features/products/presentation/widgets/product_quick_review.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../domain/entities/product.dart';

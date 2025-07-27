@@ -1,4 +1,4 @@
-import '../entities/product.dart';
+import 'package:fashion/features/products/domain/entities/product.dart';
 import '../repo_interface/product_repository.dart';
 
 class GetProducts {
@@ -10,7 +10,15 @@ class GetProducts {
     return await repository.getProductsByCategory(categoryId);
   }
 }
+class GetAllProducts {
+  final ProductRepository repository;
 
+  GetAllProducts(this.repository);
+
+  Future<List<Product>> call() async {
+    return await repository.getAllProducts();
+  }
+}
 class SearchProducts {
   final ProductRepository repository;
 

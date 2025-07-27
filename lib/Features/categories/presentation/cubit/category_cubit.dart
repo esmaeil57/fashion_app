@@ -1,5 +1,5 @@
 
-import 'package:fashion/Features/categories/presentation/cubit/category_state.dart';
+import 'package:fashion/features/categories/presentation/cubit/category_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../domain/usecase/get_categories.dart';

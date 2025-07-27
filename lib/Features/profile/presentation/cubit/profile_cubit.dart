@@ -1,6 +1,5 @@
-import 'package:fashion/Features/profile/presentation/cubit/profile_state.dart';
+import 'package:fashion/features/profile/presentation/cubit/profile_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import '../../domain/entities/user.dart';
 import '../../domain/usecase/user_usecase.dart';
 

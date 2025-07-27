@@ -1,6 +1,6 @@
-import 'package:fashion/Features/categories/presentation/cubit/category_cubit.dart';
-import 'package:fashion/Features/categories/presentation/cubit/category_state.dart';
-import 'package:fashion/Features/categories/presentation/widgets/category_card.dart';
+import 'package:fashion/features/categories/presentation/cubit/category_cubit.dart';
+import 'package:fashion/features/categories/presentation/cubit/category_state.dart';
+import 'package:fashion/features/categories/presentation/widgets/category_card.dart';
 import 'package:fashion/core/common_widgets/search_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
