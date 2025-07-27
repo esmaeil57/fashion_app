@@ -30,9 +30,7 @@ Future<void> initInjection() async {
   //await profileInjector();
 
  // await searchInjector();
-
-  //await allCategoryInjector();
-
+await allCategoriesInjector(); 
   //await favouriteInjector();
   // await paymentGetwayInjector();
 }
