@@ -1,3 +1,6 @@
+import 'package:fashion/core/dependency_injection/injector.dart';
+import 'package:fashion/features/categories/domain/usecase/get_categories.dart';
+import 'package:fashion/features/categories/presentation/cubit/category_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../cubit/navigation_cubit.dart';
@@ -9,13 +12,17 @@ import '../../../homepage/presentation/pages/home_page.dart';
 import '../../../profile/presentation/pages/profile_page.dart';
 
 class MainPage extends StatelessWidget {
-  final List<Widget> _pages = [
-    HomePage(),
-    CategoriesPage(),
-    BasketPage(),
-    FavouritesPage(),
-    ProfilePage(),
-  ];
+ final List<Widget> _pages = [
+  HomePage(),
+  BlocProvider(
+    create: (_) => CategoryCubit(getCategories: injector<GetCategories>())..loadCategories(),
+    child: const CategoriesPage(),
+  ),
+  BasketPage(),
+  FavouritesPage(),
+  ProfilePage(),
+];
+
   MainPage({super.key});
 
   @override

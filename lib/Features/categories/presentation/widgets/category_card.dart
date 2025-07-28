@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:fashion/core/common_widgets/smart_image.dart';
 import '../../../products/presentation/pages/products_page.dart';
 import '../../domain/entities/category.dart';
-import 'package:fashion/features/categories/presentation/widgets/fig_logo.dart';
 
 class CategoryCard extends StatelessWidget {
   final Category category;
@@ -35,15 +35,7 @@ class CategoryCard extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Container(
-                  width: 60,
-                  height: 60,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                    color: Colors.grey[200],
-                  ),
-                  child: const FigLogo(),
-                ),
+                _buildCategoryImage(),
                 const SizedBox(width: 16),
                 Expanded(
                   child: Text(
@@ -61,5 +53,33 @@ class CategoryCard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Widget _buildCategoryImage() {
+    // Check if we have a real image URL or just the placeholder
+    if (category.imageUrl == 'assets/logo.png' || 
+        category.imageUrl.isEmpty ||
+        category.imageUrl == 'null') {
+      // Use FigLogo for placeholder/default images
+      return Container(
+        width: 60,
+        height: 60,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(8),
+          color: Colors.grey[200],
+        ),
+        child: Image.asset('assets/logo.png'),
+      );
+    } else {
+      // Use SmartImage for network/asset images
+      return SmartImage(
+        imageUrl: category.imageUrl,
+        width: 60,
+        height: 60,
+        fit: BoxFit.cover,
+        placeholder: 'assets/logo.png', // Fallback to logo
+        borderRadius: BorderRadius.circular(8),
+      );
+    }
   }
 }

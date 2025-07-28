@@ -1,16 +1,22 @@
 import 'package:fashion/core/dependency_injection/injector.dart';
 import 'package:fashion/core/network/api/api_consumer.dart';
 import 'package:fashion/core/network/network_info.dart';
+import '../data/datasources/category_remote_data_source.dart';
 import '../data/repositories/category_repository_impl.dart';
 import '../domain/repo_interface/category_repository.dart';
 import '../domain/usecase/get_categories.dart';
 import '../presentation/cubit/category_cubit.dart';
 
 Future<void> allCategoriesInjector() async {
+  // Register data source
+  injector.registerLazySingleton<CategoryRemoteDataSource>(
+    () => CategoryRemoteDataSourceImpl(apiConsumer: injector<ApiConsumer>()),
+  );
+
   // Register repository
   injector.registerLazySingleton<CategoryRepository>(
     () => CategoryRepositoryImpl(
-      apiConsumer: injector<ApiConsumer>(),
+      remoteDataSource: injector<CategoryRemoteDataSource>(),
       networkInfo: injector<NetworkInfo>(),
     ),
   );

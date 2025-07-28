@@ -7,7 +7,7 @@ class GetCategories {
 
   GetCategories(this.repository);
 
-  Future<List<Category>> call() async {
-    return await repository.getCategories();
+  Future<List<Category>> call({int page = 1, int perPage = 10}) async {
+    return await repository.getCategories(page: page, perPage: perPage);
   }
 }

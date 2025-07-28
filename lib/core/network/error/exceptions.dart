@@ -5,7 +5,7 @@ class NetworkException implements Exception {
   String? code;
   String? message;
   Data? data;
-  DioError? dioError;
+  DioException? dioError;
   Response<dynamic>? response;
 
   NetworkException([
@@ -31,7 +31,7 @@ class NetworkException implements Exception {
 }
 
 class FetchDataException extends NetworkException {
-  FetchDataException({DioError? dioError, Response<dynamic>? response})
+  FetchDataException({DioException? dioError, Response<dynamic>? response})
       : super("Error During Communication", null, null, dioError, response);
 }
 
@@ -40,7 +40,7 @@ class BadRequestException extends NetworkException {
 
   BadRequestException(
       {required this.requestError,
-      DioError? dioError,
+      DioException? dioError,
       Response<dynamic>? response})
       : super.fromJson(requestError.toJson()) {
     this.dioError = dioError;
@@ -53,7 +53,7 @@ class UnauthorizedException extends NetworkException {
 
   UnauthorizedException(
       {required this.requestError,
-      DioError? dioError,
+      DioException? dioError,
       Response<dynamic>? response})
       : super.fromJson(requestError.toJson()) {
     this.dioError = dioError;
@@ -66,7 +66,7 @@ class NotFoundException extends NetworkException {
 
   NotFoundException(
       {required this.requestError,
-      DioError? dioError,
+      DioException? dioError,
       Response<dynamic>? response})
       : super.fromJson(requestError.toJson()) {
     this.dioError = dioError;
@@ -75,24 +75,24 @@ class NotFoundException extends NetworkException {
 }
 
 class ConflictException extends NetworkException {
-  ConflictException({DioError? dioError, Response<dynamic>? response})
+  ConflictException({DioException? dioError, Response<dynamic>? response})
       : super("Conflict Occurred", null, null, dioError, response);
 }
 
 class UnknownException extends NetworkException {
-  UnknownException({DioError? dioError, Response<dynamic>? response})
+  UnknownException({DioException? dioError, Response<dynamic>? response})
       : super("Something went wrong", null, null, dioError, response);
 }
 
 class InternalServerErrorException extends NetworkException {
   InternalServerErrorException(
-      {DioError? dioError, Response<dynamic>? response})
+      {DioException? dioError, Response<dynamic>? response})
       : super("Internal Server Error", null, null, dioError, response);
 }
 
 class NoInternetConnectionException extends NetworkException {
   NoInternetConnectionException(
-      {DioError? dioError, Response<dynamic>? response})
+      {DioException? dioError, Response<dynamic>? response})
       : super("No Internet Connection", null, null, dioError, response);
 }
 
