@@ -7,6 +7,7 @@ import 'package:fashion/core/network/api/dio_injector.dart';
 //import 'package:fashion/features/profile/di/profile_injector.dart';
 //import 'package:fashion/features/search/di/search_injector.dart';
 import 'package:fashion/features/categories/di/all_categories_injector.dart';
+import 'package:fashion/features/products/di/product_injector.dart';
 //import 'package:fashion/features/favourites/di/favourite_injector.dart';
 import 'package:get_it/get_it.dart';
 //import '../bloc_observer/bloc_observer_injector.dart';
@@ -14,7 +15,7 @@ import 'package:get_it/get_it.dart';
 final injector = GetIt.instance;
 
 Future<void> initInjection() async {
- // await blocObserverInjector();
+  // await blocObserverInjector();
   await dioInjector();
 
   //await hiveInjector();
@@ -29,9 +30,10 @@ Future<void> initInjection() async {
 
   //await profileInjector();
 
- // await searchInjector();
-await allCategoriesInjector(); 
+  // await searchInjector();
+  await allCategoriesInjector();
+  await productInjector();
+
   //await favouriteInjector();
   // await paymentGetwayInjector();
 }
-

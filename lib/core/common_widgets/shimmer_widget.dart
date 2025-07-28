@@ -76,7 +76,7 @@ class CategoryShimmerLoading extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      itemCount: 6,
+      itemCount: 7,
       itemBuilder: (context, index) {
         return Container(
           margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
@@ -130,7 +130,7 @@ class ProductGridShimmerLoading extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
-        childAspectRatio: 0.75,
+        childAspectRatio: 0.5,
         crossAxisSpacing: 16,
         mainAxisSpacing: 16,
       ),

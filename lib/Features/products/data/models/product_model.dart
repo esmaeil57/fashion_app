@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 import '../../domain/entities/product.dart';
 
 class ProductModel extends Product {
@@ -24,24 +26,27 @@ class ProductModel extends Product {
     // Extract image URLs
     List<String> imageUrls = [];
     if (json['images'] != null && json['images'] is List) {
-      imageUrls = (json['images'] as List)
-          .map((image) => image['src'] as String? ?? '')
-          .where((url) => url.isNotEmpty)
-          .toList();
+      imageUrls =
+          (json['images'] as List)
+              .map((image) => image['src'] as String? ?? '')
+              .where((url) => url.isNotEmpty)
+              .toList();
     }
 
     // Extract colors from attributes
     List<String> colors = [];
     if (json['attributes'] != null && json['attributes'] is List) {
       final colorAttribute = (json['attributes'] as List).firstWhere(
-        (attr) => attr['name']?.toString().toLowerCase().contains('color') == true ||
-                  attr['name']?.toString().toLowerCase().contains('colour') == true,
+        (attr) =>
+            attr['name']?.toString().toLowerCase().contains('color') == true ||
+            attr['name']?.toString().toLowerCase().contains('colour') == true,
         orElse: () => null,
       );
       if (colorAttribute != null && colorAttribute['options'] != null) {
-        colors = (colorAttribute['options'] as List)
-            .map((option) => option.toString())
-            .toList();
+        colors =
+            (colorAttribute['options'] as List)
+                .map((option) => option.toString())
+                .toList();
       }
     }
 
@@ -49,20 +54,24 @@ class ProductModel extends Product {
     List<String> sizes = [];
     if (json['attributes'] != null && json['attributes'] is List) {
       final sizeAttribute = (json['attributes'] as List).firstWhere(
-        (attr) => attr['name']?.toString().toLowerCase().contains('size') == true,
+        (attr) =>
+            attr['name']?.toString().toLowerCase().contains('size') == true,
         orElse: () => null,
       );
       if (sizeAttribute != null && sizeAttribute['options'] != null) {
-        sizes = (sizeAttribute['options'] as List)
-            .map((option) => option.toString())
-            .toList();
+        sizes =
+            (sizeAttribute['options'] as List)
+                .map((option) => option.toString())
+                .toList();
       }
     }
 
     // Extract category information
     String categoryId = '';
     String categoryName = '';
-    if (json['categories'] != null && json['categories'] is List && (json['categories'] as List).isNotEmpty) {
+    if (json['categories'] != null &&
+        json['categories'] is List &&
+        (json['categories'] as List).isNotEmpty) {
       final firstCategory = (json['categories'] as List).first;
       categoryId = firstCategory['id']?.toString() ?? '';
       categoryName = firstCategory['name']?.toString() ?? '';
@@ -71,9 +80,11 @@ class ProductModel extends Product {
     // Parse prices
     double regularPrice = 0.0;
     double? salePrice;
-    
+
     try {
-      regularPrice = double.tryParse(json['regular_price']?.toString() ?? '0') ?? 0.0;
+      regularPrice =
+          double.tryParse(json['regular_price']?.toString() ?? '') ??
+          double.tryParse(json['price']?.toString() ?? '') ?? 0;
       final salePriceStr = json['sale_price']?.toString();
       if (salePriceStr != null && salePriceStr.isNotEmpty) {
         salePrice = double.tryParse(salePriceStr);
@@ -81,7 +92,10 @@ class ProductModel extends Product {
     } catch (e) {
       regularPrice = 0.0;
     }
-
+    debugPrint(
+      'Product "${json['name']}" - Regular: $regularPrice, Sale: $salePrice',
+    );
+    debugPrint('FULL JSON: ${json.toString()}');
     return ProductModel(
       id: json['id']?.toString() ?? '',
       name: json['name']?.toString() ?? '',
@@ -108,22 +122,11 @@ class ProductModel extends Product {
       'regular_price': price.toString(),
       'sale_price': salePrice?.toString(),
       'categories': [
-        {
-          'id': categoryId,
-          'name': categoryName,
-        }
+        {'id': categoryId, 'name': categoryName},
       ],
       'attributes': [
-        if (colors.isNotEmpty)
-          {
-            'name': 'Color',
-            'options': colors,
-          },
-        if (sizes.isNotEmpty)
-          {
-            'name': 'Size',
-            'options': sizes,
-          },
+        if (colors.isNotEmpty) {'name': 'Color', 'options': colors},
+        if (sizes.isNotEmpty) {'name': 'Size', 'options': sizes},
       ],
       'description': description,
       'sku': sku,

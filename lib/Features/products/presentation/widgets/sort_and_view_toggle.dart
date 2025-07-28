@@ -3,7 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../cubit/product_cubit.dart';
 import '../cubit/product_state.dart';
 
-enum SortOption { recommended, lowestPrice, highestPrice }
+enum SortOption { 
+  recommended, 
+  lowestPrice, 
+  highestPrice, 
+}
 
 class SortAndViewToggle extends StatelessWidget {
   const SortAndViewToggle({super.key});
@@ -28,7 +32,7 @@ class SortAndViewToggle extends StatelessWidget {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    //handle bar
+                    // Handle bar
                     Container(
                       width: 80,
                       height: 4,
@@ -53,14 +57,14 @@ class SortAndViewToggle extends StatelessWidget {
                             ),
                           ),
                         ),
-                        Row(
+                        const Row(
                           children: [
                             Icon(
                               Icons.import_export,
                               color: Colors.black,
                               size: 24,
                             ),
-                            const Text(
+                            Text(
                               "SORT",
                               style: TextStyle(
                                 fontWeight: FontWeight.w500,
@@ -71,7 +75,20 @@ class SortAndViewToggle extends StatelessWidget {
                         ),
                         TextButton(
                           onPressed: () {
-                            print('Selected Sort: $selectedOption');
+                            // Apply the selected sort option
+                            String sortBy;
+                            switch (selectedOption) {
+                              case SortOption.lowestPrice:
+                                sortBy = 'price_low_to_high';
+                                break;
+                              case SortOption.highestPrice:
+                                sortBy = 'price_high_to_low';
+                                break;
+                              default:
+                                sortBy = 'recommended';
+                            }
+                            
+                            context.read<ProductCubit>().sortProducts(sortBy);
                             Navigator.pop(context);
                           },
                           child: const Text(
@@ -87,28 +104,29 @@ class SortAndViewToggle extends StatelessWidget {
                     ),
                     const SizedBox(height: 16),
                     // Sorting Options
-                    RadioListTile<SortOption>(
-                      title: const Text("Recommended Sorting"),
-                      value: SortOption.recommended,
-                      groupValue: selectedOption,
-                      onChanged:
-                          (value) => setState(() => selectedOption = value!),
-                    ),
-                    const Divider(thickness: 2, color: Colors.grey),
-                    RadioListTile<SortOption>(
-                      title: const Text("Lowest Price"),
-                      value: SortOption.lowestPrice,
-                      groupValue: selectedOption,
-                      onChanged:
-                          (value) => setState(() => selectedOption = value!),
-                    ),
-                    const Divider(thickness: 2, color: Colors.grey),
-                    RadioListTile<SortOption>(
-                      title: const Text("Highest Price"),
-                      value: SortOption.highestPrice,
-                      groupValue: selectedOption,
-                      onChanged:
-                          (value) => setState(() => selectedOption = value!),
+                    Column(
+                      children: [
+                        _buildSortOption(
+                          'Recommended Sorting',
+                          SortOption.recommended,
+                          selectedOption,
+                          setState,
+                        ),
+                        const Divider(thickness: 1, color: Colors.grey),
+                        _buildSortOption(
+                          'Lowest Price',
+                          SortOption.lowestPrice,
+                          selectedOption,
+                          setState,
+                        ),
+                        const Divider(thickness: 1, color: Colors.grey),
+                        _buildSortOption(
+                          'Highest Price',
+                          SortOption.highestPrice,
+                          selectedOption,
+                          setState,
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -117,6 +135,26 @@ class SortAndViewToggle extends StatelessWidget {
           },
         );
       },
+    );
+  }
+
+  Widget _buildSortOption(
+    String title,
+    SortOption value,
+    SortOption selectedOption,
+    StateSetter setState,
+  ) {
+    return RadioListTile<SortOption>(
+      title: Text(title),
+      value: value,
+      groupValue: selectedOption,
+      onChanged: (SortOption? newValue) {
+        setState(() {
+          selectedOption = newValue!;
+        });
+      },
+      activeColor: Colors.red,
+      contentPadding: EdgeInsets.zero,
     );
   }
 

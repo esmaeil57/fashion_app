@@ -1,20 +1,20 @@
 class Product {
   final String id;
   final String name;
-  final List<String> imageUrls; // Changed from single imageUrl to list
+  final List<String> imageUrls; 
   final double price;
   final String categoryId;
-  final String categoryName; // Added category name
+  final String categoryName;
   final bool isFavorite;
   final bool isAddedToCart;
   final List<String> colors;
   final List<String> sizes;
-  final String description; // Added description
-  final String sku; // Added SKU
-  final bool inStock; // Added stock status
-  final int stockQuantity; // Added stock quantity
-  final double? salePrice; // Added sale price
-  final String status; // Added product status
+  final String description;
+  final String sku; 
+  final bool inStock;
+  final int stockQuantity;
+  final double? salePrice;
+  final String status;
 
   const Product({
     required this.id,

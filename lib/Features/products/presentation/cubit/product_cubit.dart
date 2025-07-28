@@ -18,7 +18,6 @@ class ProductCubit extends Cubit<ProductState> {
     required this.searchProducts,
   }) : super(ProductInitial());
 
-
   Future<void> loadProducts(String categoryId) async {
     _currentCategoryId = categoryId;
     emit(ProductLoading());
@@ -42,7 +41,7 @@ class ProductCubit extends Cubit<ProductState> {
     emit(ProductLoading());
 
     try {
-      final products = await getAllProducts(); 
+      final products = await getAllProducts();
       emit(
         ProductLoaded(
           products: products,
@@ -62,16 +61,7 @@ class ProductCubit extends Cubit<ProductState> {
       final updatedProducts =
           currentState.products.map((product) {
             if (product.id == productId) {
-              return Product(
-                id: product.id,
-                name: product.name,
-                imageUrl: product.imageUrl,
-                price: product.price,
-                categoryId: product.categoryId,
-                isFavorite: !product.isFavorite,
-                colors: product.colors,
-                sizes: product.sizes,
-              );
+              return product.copyWith(isFavorite: !product.isFavorite);
             }
             return product;
           }).toList();
@@ -81,6 +71,8 @@ class ProductCubit extends Cubit<ProductState> {
           products: updatedProducts,
           isGridView: currentState.isGridView,
           searchQuery: currentState.searchQuery,
+          selectedSize: currentState.selectedSize,
+          selectedColor: currentState.selectedColor,
         ),
       );
     }
@@ -93,16 +85,7 @@ class ProductCubit extends Cubit<ProductState> {
       final updatedProducts =
           currentState.products.map((product) {
             if (product.id == productId) {
-              return Product(
-                id: product.id,
-                name: product.name,
-                imageUrl: product.imageUrl,
-                price: product.price,
-                categoryId: product.categoryId,
-                isAddedToCart: !product.isAddedToCart,
-                colors: product.colors,
-                sizes: product.sizes,
-              );
+              return product.copyWith(isAddedToCart: !product.isAddedToCart);
             }
             return product;
           }).toList();
@@ -112,6 +95,8 @@ class ProductCubit extends Cubit<ProductState> {
           products: updatedProducts,
           isGridView: currentState.isGridView,
           searchQuery: currentState.searchQuery,
+          selectedSize: currentState.selectedSize,
+          selectedColor: currentState.selectedColor,
         ),
       );
     }
@@ -156,6 +141,8 @@ class ProductCubit extends Cubit<ProductState> {
           products: currentState.products,
           isGridView: _isGridView,
           searchQuery: _searchQuery,
+          selectedSize: currentState.selectedSize,
+          selectedColor: currentState.selectedColor,
         ),
       );
     }
@@ -164,34 +151,115 @@ class ProductCubit extends Cubit<ProductState> {
   Future<void> searchProductsInCategory(String query) async {
     _searchQuery = query;
 
-    if (state is ProductLoaded) {
-      emit(ProductLoading());
+    if (query.isEmpty) {
+      // If query is empty, reload the original products
+      await loadProducts(_currentCategoryId);
+      return;
+    }
 
-      try {
+    emit(ProductLoading());
+
+    try {
+      List<Product> products;
+
+      if (_currentCategoryId == 'all') {
+        // Search in all products using the API search endpoint
+        products = await searchProducts(query);
+      } else {
+        // Get products by category first, then filter by search query
         final allProducts = await getProducts(_currentCategoryId);
-        final filteredProducts =
+        products =
             allProducts
                 .where(
                   (product) =>
-                      product.name.toLowerCase().contains(query.toLowerCase()),
+                      product.name.toLowerCase().contains(
+                        query.toLowerCase(),
+                      ) ||
+                      product.description.toLowerCase().contains(
+                        query.toLowerCase(),
+                      ),
                 )
                 .toList();
-
-        emit(
-          ProductLoaded(
-            products: filteredProducts,
-            isGridView: _isGridView,
-            searchQuery: _searchQuery,
-          ),
-        );
-      } catch (e) {
-        emit(ProductError(e.toString()));
       }
+
+      emit(
+        ProductLoaded(
+          products: products,
+          isGridView: _isGridView,
+          searchQuery: _searchQuery,
+        ),
+      );
+    } catch (e) {
+      emit(ProductError(e.toString()));
     }
   }
 
   void clearSearch() {
     _searchQuery = '';
-    loadProducts(_currentCategoryId);
+    if (_currentCategoryId == 'all') {
+      loadAllProducts();
+    } else {
+      loadProducts(_currentCategoryId);
+    }
+  }
+
+  // Method to filter products by category (used when categories are mixed)
+  void filterByCategory(String categoryId) {
+    if (state is ProductLoaded) {
+      final currentState = state as ProductLoaded;
+
+      if (categoryId == 'all') {
+        loadAllProducts();
+        return;
+      }
+
+      final filteredProducts =
+          currentState.products
+              .where((product) => product.categoryId == categoryId)
+              .toList();
+
+      emit(
+        ProductLoaded(
+          products: filteredProducts,
+          isGridView: currentState.isGridView,
+          searchQuery: currentState.searchQuery,
+          selectedSize: currentState.selectedSize,
+          selectedColor: currentState.selectedColor,
+        ),
+      );
+    }
+  }
+
+  // Method to sort products
+  void sortProducts(String sortBy) {
+    if (state is ProductLoaded) {
+      final currentState = state as ProductLoaded;
+      final sortedProducts = List<Product>.from(currentState.products);
+
+      switch (sortBy.toLowerCase()) {
+        case 'price_low_to_high':
+          sortedProducts.sort(
+            (a, b) => a.effectivePrice.compareTo(b.effectivePrice),
+          );
+          break;
+        case 'price_high_to_low':
+          sortedProducts.sort(
+            (a, b) => b.effectivePrice.compareTo(a.effectivePrice),
+          );
+          break;
+        default:
+          break;
+      }
+
+      emit(
+        ProductLoaded(
+          products: sortedProducts,
+          isGridView: currentState.isGridView,
+          searchQuery: currentState.searchQuery,
+          selectedSize: currentState.selectedSize,
+          selectedColor: currentState.selectedColor,
+        ),
+      );
+    }
   }
 }
