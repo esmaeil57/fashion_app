@@ -1,4 +1,5 @@
 import 'package:fashion/core/common_widgets/shimmer_widget.dart';
+import 'package:fashion/features/products/presentation/pages/product_details_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fashion/features/products/data/models/product_model.dart';
@@ -13,8 +14,8 @@ class ProductCard extends StatefulWidget {
   final bool isLoading;
 
   const ProductCard({
-    super.key, 
-    required this.product, 
+    super.key,
+    required this.product,
     this.isGridView = true,
     this.isLoading = false,
   });
@@ -42,13 +43,28 @@ class _ProductCardState extends State<ProductCard> {
     return BlocConsumer<ProductCubit, ProductState>(
       listener: (context, state) {},
       builder: (context, state) {
-        final isFavorite = _getProductFromState(state)?.isFavorite ?? widget.product.isFavorite;
+        final isFavorite =
+            _getProductFromState(state)?.isFavorite ??
+            widget.product.isFavorite;
         final isInCart = _getProductFromState(state)?.isAddedToCart ?? false;
 
-        return widget.isGridView
-            ? _buildGridCard(context, isFavorite, isInCart)
-            : _buildListCard(context, isFavorite, isInCart);
+        return GestureDetector(
+          onTap: () => _navigateToProductDetails(context),
+          child:
+              widget.isGridView
+                  ? _buildGridCard(context, isFavorite, isInCart)
+                  : _buildListCard(context, isFavorite, isInCart),
+        );
       },
+    );
+  }
+
+  void _navigateToProductDetails(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ProductDetailsPage(product: widget.product),
+      ),
     );
   }
 
@@ -56,16 +72,18 @@ class _ProductCardState extends State<ProductCard> {
     if (state is ProductLoaded) {
       return state.products.firstWhere(
         (p) => p.id == widget.product.id,
-        orElse: () => widget.product is ProductModel
-            ? widget.product as ProductModel
-            : ProductModel(
-                id: widget.product.id,
-                name: widget.product.name,
-                imageUrls: widget.product.imageUrls,
-                price: widget.product.price,
-                categoryId: widget.product.categoryId,
-                categoryName: widget.product.categoryName,
-              ),
+        orElse:
+            () =>
+                widget.product is ProductModel
+                    ? widget.product as ProductModel
+                    : ProductModel(
+                      id: widget.product.id,
+                      name: widget.product.name,
+                      imageUrls: widget.product.imageUrls,
+                      price: widget.product.price,
+                      categoryId: widget.product.categoryId,
+                      categoryName: widget.product.categoryName,
+                    ),
       );
     }
     return null;
@@ -163,10 +181,7 @@ class _ProductCardState extends State<ProductCard> {
           ),
           // Progress indicator section
           _buildProgressIndicator(),
-          Expanded(
-            flex: 1,
-            child: _buildProductInfo(),
-          ),
+          Expanded(flex: 1, child: _buildProductInfo()),
         ],
       ),
     );
@@ -186,10 +201,7 @@ class _ProductCardState extends State<ProductCard> {
           ),
           // Progress indicator section
           _buildProgressIndicator(),
-          Expanded(
-            flex: 1,
-            child: _buildProductInfo(isListView: true),
-          ),
+          Expanded(flex: 1, child: _buildProductInfo(isListView: true)),
         ],
       ),
     );
@@ -216,9 +228,8 @@ class _ProductCardState extends State<ProductCard> {
             height: 8,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(4),
-              color: index == _currentImageIndex
-                  ? Colors.red
-                  : Colors.grey[300],
+              color:
+                  index == _currentImageIndex ? Colors.red : Colors.grey[300],
             ),
           ),
         ),
@@ -226,7 +237,11 @@ class _ProductCardState extends State<ProductCard> {
     );
   }
 
-  Widget _buildImageSection(BuildContext context, bool isFavorite, bool isInCart) {
+  Widget _buildImageSection(
+    BuildContext context,
+    bool isFavorite,
+    bool isInCart,
+  ) {
     return Stack(
       children: [
         Container(
@@ -254,7 +269,8 @@ class _ProductCardState extends State<ProductCard> {
             Icons.favorite,
             Icons.favorite_border,
             isFavorite,
-            () => context.read<ProductCubit>().toggleFavorite(widget.product.id),
+            () =>
+                context.read<ProductCubit>().toggleFavorite(widget.product.id),
             backgroundColor: Colors.white,
           ),
         ),
@@ -313,10 +329,7 @@ class _ProductCardState extends State<ProductCard> {
   }) {
     return IconButton(
       padding: const EdgeInsets.all(8),
-      constraints: const BoxConstraints(
-        minWidth: 40,
-        minHeight: 40,
-      ),
+      constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
       icon: Icon(
         isActive ? activeIcon : inactiveIcon,
         color: isActive ? Colors.red : Colors.grey[600],
@@ -366,19 +379,16 @@ class _ProductCardState extends State<ProductCard> {
         width: double.infinity,
         height: double.infinity,
         color: Colors.grey[200],
-        child: const Icon(
-          Icons.image,
-          size: 50,
-          color: Colors.grey,
-        ),
+        child: const Icon(Icons.image, size: 50, color: Colors.grey),
       );
     }
 
     return PageView.builder(
       controller: _pageController,
-      itemCount: widget.product.imageUrls.length > 6
-          ? 6
-          : widget.product.imageUrls.length,
+      itemCount:
+          widget.product.imageUrls.length > 6
+              ? 6
+              : widget.product.imageUrls.length,
       onPageChanged: (index) {
         setState(() {
           _currentImageIndex = index;
@@ -403,14 +413,11 @@ class _ProductCardState extends State<ProductCard> {
               ),
             );
           },
-          errorBuilder: (context, error, stackTrace) => Container(
-            color: Colors.grey[200],
-            child: const Icon(
-              Icons.image,
-              size: 50,
-              color: Colors.grey,
-            ),
-          ),
+          errorBuilder:
+              (context, error, stackTrace) => Container(
+                color: Colors.grey[200],
+                child: const Icon(Icons.image, size: 50, color: Colors.grey),
+              ),
         );
       },
     );
@@ -422,16 +429,17 @@ class _ProductCardState extends State<ProductCard> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => Container(
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-        ),
-        child: BlocProvider.value(
-          value: cubit,
-          child: ProductQuickReview(product: widget.product),
-        ),
-      ),
+      builder:
+          (_) => Container(
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+            ),
+            child: BlocProvider.value(
+              value: cubit,
+              child: ProductQuickReview(product: widget.product),
+            ),
+          ),
     );
   }
 
@@ -448,5 +456,4 @@ class _ProductCardState extends State<ProductCard> {
       ],
     );
   }
-
 }

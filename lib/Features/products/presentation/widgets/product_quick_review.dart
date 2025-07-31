@@ -1,4 +1,5 @@
 import 'package:fashion/core/utils/styles/color/app_colors.dart';
+import 'package:fashion/features/products/presentation/pages/product_details_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../domain/entities/product.dart';
@@ -294,6 +295,13 @@ class _ProductQuickReviewState extends State<ProductQuickReview> {
                     Center(
                       child: GestureDetector(
                         onTap: () {
+                          Navigator.pop(context); 
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ProductDetailsPage(product: widget.product),
+                            ),
+                          );
                         },
                         child: const Text(
                           'Go to Product Details',
