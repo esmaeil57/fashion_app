@@ -1,3 +1,4 @@
+import 'package:fashion/core/utils/styles/color/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../domain/entities/product.dart';
@@ -498,22 +499,22 @@ class _ProductQuickReviewState extends State<ProductQuickReview> {
   Color _parseColor(String color) {
     switch (color.toLowerCase()) {
       case 'black':
-        return Colors.black;
+        return AppColors.black;
       case 'red':
-        return Colors.red;
+        return AppColors.red;
       case 'blue':
-        return Colors.blue;
+        return AppColors.fontColor;
       case 'white':
-        return Colors.white;
+        return AppColors.white;
       case 'grey':
       case 'gray':
-        return Colors.grey;
+        return AppColors.gray;
       case 'pink':
         return Colors.pink;
       case 'green':
-        return Colors.green;
+        return AppColors.green;
       case 'yellow':
-        return Colors.yellow;
+        return AppColors.yellow;
       case 'orange':
         return Colors.orange;
       case 'purple':
