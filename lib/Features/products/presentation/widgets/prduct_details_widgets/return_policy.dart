@@ -8,9 +8,9 @@ class ReturnPolicy extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.grayLight,
+      margin: const EdgeInsets.symmetric(horizontal: 30),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(      
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
@@ -19,7 +19,7 @@ class ReturnPolicy extends StatelessWidget {
           const SizedBox(width: 12),
           Text(
             'Return within 30 Days',
-            style: AppStyles.styleRegular14(context).copyWith(color: AppColors.gray),
+            style: AppStyles.styleRegular14(context).copyWith(color: AppColors.gray , fontSize: 16,),
           ),
         ],
       ),

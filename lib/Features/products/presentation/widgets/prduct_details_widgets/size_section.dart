@@ -32,9 +32,10 @@ class SizeSection extends StatelessWidget {
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                     decoration: BoxDecoration(
-                      color: isSelected ? AppColors.redAccent : AppColors.borderColor,
+                      color: isSelected ? Colors.red : AppColors.white,
                       border: Border.all(
-                        color: isSelected ? AppColors.redAccent : AppColors.borderColor,
+                        color: isSelected ? Colors.red : AppColors.borderColor,
+                        width: 1.5,
                       ),
                       borderRadius: BorderRadius.circular(8),
                     ),
@@ -42,6 +43,7 @@ class SizeSection extends StatelessWidget {
                       size,
                       style: AppStyles.styleRegular14(context).copyWith(
                         color: isSelected ? AppColors.white : AppColors.black,
+                        fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
                       ),
                     ),
                   ),

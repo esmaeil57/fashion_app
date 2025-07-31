@@ -33,12 +33,12 @@ class _ProductQuickReviewState extends State<ProductQuickReview> {
 
   @override
   Widget build(BuildContext context) {
-    final sizes = widget.product.sizes.isNotEmpty 
-        ? widget.product.sizes 
-        : ['S', 'M', 'L', 'XL', '2XL', '3XL'];
-    final colors = widget.product.colors.isNotEmpty 
-        ? widget.product.colors 
-        : ['black'];
+    final sizes =
+        widget.product.sizes.isNotEmpty
+            ? widget.product.sizes
+            : ['S', 'M', 'L', 'XL', '2XL', '3XL'];
+    final colors =
+        widget.product.colors.isNotEmpty ? widget.product.colors : ['black'];
 
     return Container(
       decoration: const BoxDecoration(
@@ -79,7 +79,7 @@ class _ProductQuickReviewState extends State<ProductQuickReview> {
               ],
             ),
           ),
-          
+
           Flexible(
             child: SingleChildScrollView(
               child: Padding(
@@ -93,9 +93,9 @@ class _ProductQuickReviewState extends State<ProductQuickReview> {
                       children: [
                         // Product Image Carousel
                         _buildImageCarousel(),
-                        
+
                         const SizedBox(width: 16),
-                        
+
                         // Product Details
                         Expanded(
                           child: Column(
@@ -112,9 +112,9 @@ class _ProductQuickReviewState extends State<ProductQuickReview> {
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
                               ),
-                              
+
                               const SizedBox(height: 12),
-                              
+
                               // Price display with sale price support
                               Row(
                                 children: [
@@ -153,24 +153,26 @@ class _ProductQuickReviewState extends State<ProductQuickReview> {
                               Row(
                                 children: [
                                   Icon(
-                                    widget.product.inStock 
-                                        ? Icons.check_circle 
+                                    widget.product.inStock
+                                        ? Icons.check_circle
                                         : Icons.cancel,
                                     size: 16,
-                                    color: widget.product.inStock 
-                                        ? Colors.green 
-                                        : Colors.red,
+                                    color:
+                                        widget.product.inStock
+                                            ? Colors.green
+                                            : Colors.red,
                                   ),
                                   const SizedBox(width: 4),
                                   Text(
-                                    widget.product.inStock 
-                                        ? 'In Stock' 
+                                    widget.product.inStock
+                                        ? 'In Stock'
                                         : 'Out of Stock',
                                     style: TextStyle(
                                       fontSize: 12,
-                                      color: widget.product.inStock 
-                                          ? Colors.green 
-                                          : Colors.red,
+                                      color:
+                                          widget.product.inStock
+                                              ? Colors.green
+                                              : Colors.red,
                                       fontWeight: FontWeight.w500,
                                     ),
                                   ),
@@ -181,9 +183,9 @@ class _ProductQuickReviewState extends State<ProductQuickReview> {
                         ),
                       ],
                     ),
-                    
+
                     const SizedBox(height: 32),
-                    
+
                     // Colors Section
                     if (colors.isNotEmpty)
                       BlocBuilder<ProductCubit, ProductState>(
@@ -199,41 +201,60 @@ class _ProductQuickReviewState extends State<ProductQuickReview> {
                                   color: Colors.black,
                                 ),
                               ),
-                              
+
                               const SizedBox(height: 12),
-                              
+
                               Wrap(
                                 spacing: 12,
-                                children: colors.map((color) {
-                                  final isSelected = state.selectedColor == color;
-                                  return GestureDetector(
-                                    onTap: () => context.read<ProductCubit>().selectColor(color),
-                                    child: Container(
-                                      padding: const EdgeInsets.all(3),
-                                      decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        border: isSelected
-                                            ? Border.all(color: Colors.blue, width: 2)
-                                            : Border.all(color: Colors.grey.shade300, width: 1),
-                                      ),
-                                      child: CircleAvatar(
-                                        backgroundColor: _parseColor(color),
-                                        radius: 16,
-                                        child: isSelected
-                                            ? const Icon(Icons.check, color: Colors.white, size: 16)
-                                            : null,
-                                      ),
-                                    ),
-                                  );
-                                }).toList(),
+                                children:
+                                    colors.map((color) {
+                                      final index = state.selectedColorIndex;
+                                      final isSelected =
+                                          state.selectedColor == color;
+                                      return GestureDetector(
+                                        onTap:
+                                            () => context
+                                                .read<ProductCubit>()
+                                                .selectColor(color, index?? 0),
+                                        child: Container(
+                                          padding: const EdgeInsets.all(3),
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            border:
+                                                isSelected
+                                                    ? Border.all(
+                                                      color: AppColors.red,
+                                                      width: 2,
+                                                    )
+                                                    : Border.all(
+                                                      color:
+                                                          Colors.grey.shade300,
+                                                      width: 1,
+                                                    ),
+                                          ),
+                                          child: CircleAvatar(
+                                            backgroundColor: _parseColor(color),
+                                            radius: 16,
+                                            child:
+                                                isSelected
+                                                    ? const Icon(
+                                                      Icons.check,
+                                                      color: Colors.white,
+                                                      size: 16,
+                                                    )
+                                                    : null,
+                                          ),
+                                        ),
+                                      );
+                                    }).toList(),
                               ),
                             ],
                           );
                         },
                       ),
-                    
+
                     const SizedBox(height: 24),
-                    
+
                     // Sizes Section
                     if (sizes.isNotEmpty)
                       BlocBuilder<ProductCubit, ProductState>(
@@ -246,60 +267,79 @@ class _ProductQuickReviewState extends State<ProductQuickReview> {
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w600,
-                                  color: Colors.black,
+                                  color: AppColors.black,
                                 ),
                               ),
-                              
+
                               const SizedBox(height: 12),
-                              
+
                               Wrap(
                                 spacing: 8,
                                 runSpacing: 8,
-                                children: sizes.map((size) {
-                                  final isSelected = state.selectedSize == size;
-                                  return GestureDetector(
-                                    onTap: () => context.read<ProductCubit>().selectSize(size),
-                                    child: Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 16,
-                                        vertical: 10,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: isSelected ? Colors.black : Colors.white,
-                                        border: Border.all(
-                                          color: isSelected ? Colors.black : Colors.grey.shade300,
-                                          width: 1,
+                                children:
+                                    sizes.map((size) {
+                                      final isSelected =
+                                          state.selectedSize == size;
+                                      return GestureDetector(
+                                        onTap:
+                                            () => context
+                                                .read<ProductCubit>()
+                                                .selectSize(size),
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 16,
+                                            vertical: 10,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color:
+                                                isSelected
+                                                    ? AppColors.redAccent
+                                                    : AppColors.white,
+                                            border: Border.all(
+                                              color:
+                                                  isSelected
+                                                      ? AppColors.redAccent
+                                                      : AppColors.gray,
+                                              width: 1,
+                                            ),
+                                            borderRadius: BorderRadius.circular(
+                                              8,
+                                            ),
+                                          ),
+                                          child: Text(
+                                            size,
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w500,
+                                              color:
+                                                  isSelected
+                                                      ? Colors.white
+                                                      : Colors.black,
+                                            ),
+                                          ),
                                         ),
-                                        borderRadius: BorderRadius.circular(8),
-                                      ),
-                                      child: Text(
-                                        size,
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w500,
-                                          color: isSelected ? Colors.white : Colors.black,
-                                        ),
-                                      ),
-                                    ),
-                                  );
-                                }).toList(),
+                                      );
+                                    }).toList(),
                               ),
                             ],
                           );
                         },
                       ),
-                    
+
                     const SizedBox(height: 32),
-                    
+
                     // Go to Product Details Link
                     Center(
                       child: GestureDetector(
                         onTap: () {
-                          Navigator.pop(context); 
+                          Navigator.pop(context);
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => ProductDetailsPage(product: widget.product),
+                              builder:
+                                  (context) => ProductDetailsPage(
+                                    product: widget.product,
+                                  ),
                             ),
                           );
                         },
@@ -314,53 +354,61 @@ class _ProductQuickReviewState extends State<ProductQuickReview> {
                         ),
                       ),
                     ),
-                    
+
                     const SizedBox(height: 24),
                   ],
                 ),
               ),
             ),
           ),
-          
+
           // Bottom Button
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(20),
             child: BlocBuilder<ProductCubit, ProductState>(
               builder: (context, state) {
-                final isReady = state.selectedSize != null && state.selectedColor != null;
-                final buttonText = isReady 
-                    ? 'ADD TO CART' 
-                    : 'CHOOSE A SIZE AND COLOR';
-                
+                final isReady =
+                    state.selectedSize != null && state.selectedColor != null;
+                final buttonText =
+                    isReady ? 'ADD TO CART' : 'CHOOSE A SIZE AND COLOR';
+
                 return ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: isReady 
-                        ? Colors.black 
-                        : const Color.fromARGB(248, 201, 83, 83), 
-                    foregroundColor: Colors.white,
+                    backgroundColor:
+                        isReady
+                            ? AppColors.redAccent
+                            :  AppColors.red,
+                    foregroundColor: AppColors.white,
                     minimumSize: const Size.fromHeight(52),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                     elevation: 0,
                   ),
-                  onPressed: widget.product.inStock ? () {
-                    if (isReady) {
-                      // Add to cart functionality
-                      context.read<ProductCubit>().toggleCart(widget.product.id);
-                      Navigator.pop(context);
-                      
-                      // Show success message
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('${widget.product.name} added to cart'),
-                          backgroundColor: Colors.green,
-                          duration: const Duration(seconds: 2),
-                        ),
-                      );
-                    }
-                  } : null,
+                  onPressed:
+                      widget.product.inStock
+                          ? () {
+                            if (isReady) {
+                              // Add to cart functionality
+                              context.read<ProductCubit>().toggleCart(
+                                widget.product.id,
+                              );
+                              Navigator.pop(context);
+
+                              // Show success message
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    '${widget.product.name} added to cart',
+                                  ),
+                                  backgroundColor: Colors.green,
+                                  duration: const Duration(seconds: 2),
+                                ),
+                              );
+                            }
+                          }
+                          : null,
                   child: Text(
                     widget.product.inStock ? buttonText : 'OUT OF STOCK',
                     style: const TextStyle(
@@ -409,10 +457,11 @@ class _ProductQuickReviewState extends State<ProductQuickReview> {
               color: Colors.grey[200],
               child: Center(
                 child: CircularProgressIndicator(
-                  value: loadingProgress.expectedTotalBytes != null
-                      ? loadingProgress.cumulativeBytesLoaded /
-                          loadingProgress.expectedTotalBytes!
-                      : null,
+                  value:
+                      loadingProgress.expectedTotalBytes != null
+                          ? loadingProgress.cumulativeBytesLoaded /
+                              loadingProgress.expectedTotalBytes!
+                          : null,
                 ),
               ),
             );
@@ -457,10 +506,11 @@ class _ProductQuickReviewState extends State<ProductQuickReview> {
                       color: Colors.grey[200],
                       child: Center(
                         child: CircularProgressIndicator(
-                          value: loadingProgress.expectedTotalBytes != null
-                              ? loadingProgress.cumulativeBytesLoaded /
-                                  loadingProgress.expectedTotalBytes!
-                              : null,
+                          value:
+                              loadingProgress.expectedTotalBytes != null
+                                  ? loadingProgress.cumulativeBytesLoaded /
+                                      loadingProgress.expectedTotalBytes!
+                                  : null,
                         ),
                       ),
                     );
@@ -468,7 +518,11 @@ class _ProductQuickReviewState extends State<ProductQuickReview> {
                   errorBuilder: (context, error, stackTrace) {
                     return Container(
                       color: Colors.grey[200],
-                      child: const Icon(Icons.image, size: 50, color: Colors.grey),
+                      child: const Icon(
+                        Icons.image,
+                        size: 50,
+                        color: Colors.grey,
+                      ),
                     );
                   },
                 );
@@ -483,16 +537,19 @@ class _ProductQuickReviewState extends State<ProductQuickReview> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: List.generate(
-                widget.product.imageUrls.length > 5 ? 5 : widget.product.imageUrls.length,
+                widget.product.imageUrls.length > 5
+                    ? 5
+                    : widget.product.imageUrls.length,
                 (index) => Container(
                   width: 6,
                   height: 6,
                   margin: const EdgeInsets.symmetric(horizontal: 2),
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: index == _currentImageIndex 
-                        ? Colors.white 
-                        : Colors.white.withOpacity(0.5),
+                    color:
+                        index == _currentImageIndex
+                            ? Colors.white
+                            : Colors.white.withOpacity(0.5),
                   ),
                 ),
               ),

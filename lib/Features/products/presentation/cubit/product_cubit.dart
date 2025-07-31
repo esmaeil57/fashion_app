@@ -117,7 +117,7 @@ class ProductCubit extends Cubit<ProductState> {
     }
   }
 
-  void selectColor(String color) {
+  void selectColor(String color , int colorIndex) {
     if (state is ProductLoaded) {
       final currentState = state as ProductLoaded;
       emit(

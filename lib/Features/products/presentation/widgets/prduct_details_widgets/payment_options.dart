@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:fashion/core/utils/styles/color/app_colors.dart';
 import 'package:fashion/core/utils/styles/fonts/app_styles.dart';
 
 class PaymentOptions extends StatelessWidget {
@@ -23,7 +22,6 @@ class PaymentOptions extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: AppColors.grayLight,
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
