@@ -23,7 +23,7 @@ class AppColors {
   static const Color iconsColor = Color.fromRGBO(79, 85, 190, 1);
   static const Color textFeildBorder = Color.fromRGBO(143, 148, 251, 0.941);
   static const Color gackgroundScreen = Color.fromRGBO(217, 219, 244, 0.922);
-
+  static const Color yellow = Colors.yellow;
   static const Color disabledBackground = Color(0xffE4E4E5);
   static const Color disabledBorderColor = Color(0xffAAAFB5);
   static const Color carModelTextInQRScreenColor = Color(0xff8D7E7E);
@@ -33,6 +33,7 @@ class AppColors {
   static Color shadowColor = const Color.fromRGBO(241, 241, 241, 1);
   static const Color green = Color.fromARGB(255, 10, 183, 183);
   static const Color red = Color(0xffE1261D);
+  static const Color redAccent = Color.fromARGB(188, 196, 65, 58);
   static const Color fontColor = Color(0xff0C82A7);
   static const Color disabledButtonColor = Color(0xffE4E4E5);
 }
