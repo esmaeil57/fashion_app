@@ -38,6 +38,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final List<String> limitedImageUrls = widget.product.imageUrls.take(5).toList();
     bool isFavorite = widget.product.isFavorite;
     return BlocProvider(
       create: (_) => injector<ProductCubit>(),
@@ -54,7 +55,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
               child: Stack(
                 children: [
                   ProductImages(
-                    images: widget.product.imageUrls,
+                    images: limitedImageUrls,
                     currentIndex: _currentImageIndex,
                     controller: _pageController,
                     onPageChanged: (index) {
@@ -70,7 +71,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: List.generate(
-                          widget.product.imageUrls.length,
+                          limitedImageUrls.length,
                           (index) => GestureDetector(
                             onTap: () {
                               _pageController.animateToPage(
