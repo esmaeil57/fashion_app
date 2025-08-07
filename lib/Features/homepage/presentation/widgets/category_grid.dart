@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../domain/entities/product_category.dart';
 import '../../../products/presentation/pages/products_page.dart';
+import '../../../../core/common_widgets/smart_image.dart';
 
 class CategoryGrid extends StatelessWidget {
   final List<ProductCategory> categories;
@@ -9,6 +10,10 @@ class CategoryGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (categories.isEmpty) {
+      return _buildEmptyState();
+    }
+
     // Calculate items per row dynamically (at least 1 to avoid division by zero)
     final int itemsPerRow = (categories.length / 2).ceil().clamp(1, categories.length);
 
@@ -53,6 +58,32 @@ class CategoryGrid extends StatelessWidget {
     );
   }
 
+  Widget _buildEmptyState() {
+    return Container(
+      height: 120,
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.category_outlined,
+              size: 48,
+              color: Colors.grey[400],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'لا توجد فئات متاحة',
+              style: TextStyle(
+                color: Colors.grey[600],
+                fontSize: 14,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   void _navigateToProducts(BuildContext context, ProductCategory category) {
     Navigator.push(
       context,
@@ -80,54 +111,55 @@ class CategoryItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: Column(
-        children: [
-          Container(
-            width: 80,
-            height: 80,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              // Add subtle hover effect
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 4,
-                  offset: const Offset(0, 2),
+      child: SizedBox(
+        width: 80,
+        height: 110,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 80,
+              height: 80,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                // Add subtle hover effect
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: ClipOval(
+                child: SmartImage(
+                  imageUrl: category.iconPath,
+                  width: 80,
+                  height: 80,
+                  fit: BoxFit.cover,
+                  placeholder: 'assets/logo.png',
+                  borderRadius: BorderRadius.circular(40),
                 ),
-              ],
-            ),
-            child: ClipOval(
-              child: Image.asset(
-                category.iconPath, 
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return Container(
-                    color: Colors.grey[200],
-                    child: const Icon(
-                      Icons.category,
-                      size: 40,
-                      color: Colors.grey,
-                    ),
-                  );
-                },
               ),
             ),
-          ),
-          const SizedBox(height: 6),
-          SizedBox(
-            width: 80,
-            child: Text(
-              category.name,
-              style: const TextStyle(
-                fontSize: 11, 
-                fontWeight: FontWeight.w500,
+            const SizedBox(height: 4),
+            Expanded(
+              child: SizedBox(
+                width: 80,
+                child: Text(
+                  category.name,
+                  style: const TextStyle(
+                    fontSize: 10, 
+                    fontWeight: FontWeight.w500,
+                  ),
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
-              textAlign: TextAlign.center,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

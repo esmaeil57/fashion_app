@@ -7,6 +7,7 @@ import 'package:fashion/core/network/api/dio_injector.dart';
 //import 'package:fashion/features/profile/di/profile_injector.dart';
 //import 'package:fashion/features/search/di/search_injector.dart';
 import 'package:fashion/features/categories/di/all_categories_injector.dart';
+import 'package:fashion/features/homepage/di/home_page_injector.dart';
 import 'package:fashion/features/products/di/product_injector.dart';
 //import 'package:fashion/features/favourites/di/favourite_injector.dart';
 import 'package:get_it/get_it.dart';
@@ -33,6 +34,8 @@ Future<void> initInjection() async {
   // await searchInjector();
   await allCategoriesInjector();
   await productInjector();
+  await homepageInjector();
+
 
   //await favouriteInjector();
   // await paymentGetwayInjector();
