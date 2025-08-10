@@ -1,10 +1,11 @@
+import 'package:fashion/features/favorites/presentation/cubit/favorite_cubit.dart';
+import 'package:fashion/features/favorites/presentation/cubit/favorite_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fashion/core/utils/styles/color/app_colors.dart';
 import 'package:fashion/core/dependency_injection/injector.dart';
 import 'package:fashion/features/products/domain/entities/product.dart';
 import 'package:fashion/features/products/presentation/cubit/product_cubit.dart';
-//import 'package:fashion/features/products/presentation/widgets/prduct_details_widgets/bottom_actions.dart';
 import 'package:fashion/features/products/presentation/widgets/prduct_details_widgets/color_section.dart';
 import 'package:fashion/features/products/presentation/widgets/prduct_details_widgets/description_section.dart';
 import 'package:fashion/features/products/presentation/widgets/prduct_details_widgets/payment_options.dart';
@@ -26,8 +27,28 @@ class ProductDetailsPage extends StatefulWidget {
 class _ProductDetailsPageState extends State<ProductDetailsPage> {
   int _currentImageIndex = 0;
   final PageController _pageController = PageController();
-  final DraggableScrollableController _bottomSheetController =
-      DraggableScrollableController();
+  final DraggableScrollableController _bottomSheetController = DraggableScrollableController();
+  late FavoritesCubit _favoritesCubit;
+  bool _isFavorite = false;
+  bool _isLoadingFavorite = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _favoritesCubit = injector<FavoritesCubit>();
+    _checkFavoriteStatus();
+  }
+
+  void _checkFavoriteStatus() async {
+    setState(() => _isLoadingFavorite = true);
+    final isFav = await _favoritesCubit.checkIsFavorite(widget.product.id);
+    if (mounted) {
+      setState(() {
+        _isFavorite = isFav;
+        _isLoadingFavorite = false;
+      });
+    }
+  }
 
   @override
   void dispose() {
@@ -39,9 +60,12 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
   @override
   Widget build(BuildContext context) {
     final List<String> limitedImageUrls = widget.product.imageUrls.take(5).toList();
-    bool isFavorite = widget.product.isFavorite;
-    return BlocProvider(
-      create: (_) => injector<ProductCubit>(),
+    
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (_) => injector<ProductCubit>()),
+        BlocProvider.value(value: _favoritesCubit),
+      ],
       child: Scaffold(
         backgroundColor: AppColors.white,
         body: Stack(
@@ -85,10 +109,9 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                               width: 8,
                               height: _currentImageIndex == index ? 24 : 8,
                               decoration: BoxDecoration(
-                                color:
-                                    _currentImageIndex == index
-                                        ? AppColors.redAccent
-                                        : AppColors.gray.withOpacity(0.3),
+                                color: _currentImageIndex == index
+                                    ? AppColors.redAccent
+                                    : AppColors.gray.withOpacity(0.3),
                                 borderRadius: BorderRadius.circular(4),
                               ),
                             ),
@@ -96,6 +119,50 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                         ),
                       ),
                     ),
+                  // Back button
+                  Positioned(
+                    top: 20,
+                    left: 20,
+                    child: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.9),
+                        shape: BoxShape.circle,
+                      ),
+                      child: IconButton(
+                        onPressed: () => Navigator.pop(context),
+                        icon: const Icon(Icons.arrow_back, color: Colors.black),
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
+                      ),
+                    ),
+                  ),
+                  // Share button
+                  Positioned(
+                    top: 20,
+                    right: 20,
+                    child: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.9),
+                        shape: BoxShape.circle,
+                      ),
+                      child: IconButton(
+                        onPressed: () {
+                          // Share functionality
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Share functionality coming soon'),
+                              duration: Duration(seconds: 2),
+                            ),
+                          );
+                        },
+                        icon: const Icon(Icons.share, color: Colors.black),
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -143,10 +210,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                             children: [
                               ProductHeader(product: widget.product),
                               const SizedBox(height: 16),
-                              const Divider(
-                                thickness: 1,
-                                color: AppColors.borderColor,
-                              ),
+                              const Divider(thickness: 1, color: AppColors.borderColor),
                               const SizedBox(height: 16),
                               if (widget.product.sizes.isNotEmpty)
                                 SizeSection(sizes: widget.product.sizes),
@@ -169,6 +233,12 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                       // Bottom Actions
                       Container(
                         padding: const EdgeInsets.all(20),
+                        decoration: const BoxDecoration(
+                          color: AppColors.white,
+                          border: Border(
+                            top: BorderSide(color: AppColors.borderColor, width: 0.5),
+                          ),
+                        ),
                         child: SafeArea(
                           child: Row(
                             children: [
@@ -177,13 +247,19 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                 width: 50,
                                 height: 50,
                                 decoration: BoxDecoration(
-                                  border: Border.all(
-                                    color: AppColors.borderColor,
-                                  ),
+                                  border: Border.all(color: AppColors.borderColor),
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 child: IconButton(
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    // Share functionality
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text('Share functionality coming soon'),
+                                        duration: Duration(seconds: 2),
+                                      ),
+                                    );
+                                  },
                                   icon: const Icon(
                                     Icons.share_outlined,
                                     color: AppColors.black,
@@ -193,68 +269,117 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                               ),
                               const SizedBox(width: 12),
 
-                              // Favorite Button
-                              BlocBuilder<ProductCubit, dynamic>(
-                                builder: (context, state) {
-                                  return Container(
-                                    width: 50,
-                                    height: 50,
-                                    decoration: BoxDecoration(
-                                      border: Border.all(
-                                        color: AppColors.borderColor,
+                              // Favorite Button with BlocListener
+                              BlocListener<FavoritesCubit, FavoritesState>(
+                                listener: (context, state) {
+                                  if (state is FavoriteToggleSuccess) {
+                                    setState(() {
+                                      _isFavorite = state.isAdded;
+                                    });
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                          state.isAdded
+                                              ? '${state.productName} added to favorites'
+                                              : '${state.productName} removed from favorites',
+                                        ),
+                                        backgroundColor: state.isAdded ? Colors.green : Colors.orange,
+                                        duration: const Duration(seconds: 2),
                                       ),
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    child: _buildIconButton(
-                                      Icons.favorite,
-                                      Icons.favorite_border,
-                                      isFavorite,
-                                      () => context
-                                          .read<ProductCubit>()
-                                          .toggleFavorite(widget.product.id),
-                                      backgroundColor: Colors.white,
-                                    ),
-                                  );
+                                    );
+                                  } else if (state is FavoritesError) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text('Error: ${state.message}'),
+                                        backgroundColor: Colors.red,
+                                        duration: const Duration(seconds: 2),
+                                      ),
+                                    );
+                                  }
                                 },
+                                child: Container(
+                                  width: 50,
+                                  height: 50,
+                                  decoration: BoxDecoration(
+                                    border: Border.all(color: AppColors.borderColor),
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: _isLoadingFavorite
+                                      ? Container(
+                                          padding: const EdgeInsets.all(12),
+                                          child: const CircularProgressIndicator(
+                                            strokeWidth: 2,
+                                            valueColor: AlwaysStoppedAnimation<Color>(Colors.grey),
+                                          ),
+                                        )
+                                      : _buildIconButton(
+                                          Icons.favorite,
+                                          Icons.favorite_border,
+                                          _isFavorite,
+                                          () {
+                                            if (!_isLoadingFavorite) {
+                                              _favoritesCubit.toggleFavorite(widget.product);
+                                            }
+                                          },
+                                          backgroundColor: Colors.white,
+                                        ),
+                                ),
                               ),
                               const SizedBox(width: 12),
+                              
                               // Select Button
                               Expanded(
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    // context.read<ProductCubit>().toggleCart(
-                                    //   widget.product.id,
-                                    // );
-                                    // ScaffoldMessenger.of(context).showSnackBar(
-                                    //   SnackBar(
-                                    //     content: Text(
-                                    //       product.isAddedToCart
-                                    //           ? 'Removed from cart'
-                                    //           : 'Added to cart',
-                                    //     ),
-                                    //     backgroundColor: AppColors.primary,
-                                    //     duration: const Duration(seconds: 2),
-                                    //   ),
-                                    // );
+                                child: BlocBuilder<ProductCubit, dynamic>(
+                                  builder: (context, state) {
+                                    final hasSelectedSize = state.selectedSize != null;
+                                    final hasSelectedColor = state.selectedColor != null;
+                                    final canAddToCart = hasSelectedSize || hasSelectedColor || 
+                                        (widget.product.sizes.isEmpty && widget.product.colors.isEmpty);
+
+                                    return ElevatedButton(
+                                      onPressed: widget.product.inStock ? () {
+                                        if (canAddToCart) {
+                                          // Add to cart functionality
+                                          context.read<ProductCubit>().toggleCart(widget.product.id);
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            SnackBar(
+                                              content: Text('${widget.product.name} added to cart'),
+                                              backgroundColor: Colors.green,
+                                              duration: const Duration(seconds: 2),
+                                            ),
+                                          );
+                                        } else {
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            const SnackBar(
+                                              content: Text('Please select size and color'),
+                                              backgroundColor: Colors.orange,
+                                              duration: Duration(seconds: 2),
+                                            ),
+                                          );
+                                        }
+                                      } : null,
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: widget.product.inStock 
+                                            ? AppColors.redAccent 
+                                            : Colors.grey,
+                                        foregroundColor: AppColors.white,
+                                        padding: const EdgeInsets.symmetric(vertical: 16),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(12),
+                                        ),
+                                        elevation: 0,
+                                      ),
+                                      child: Text(
+                                        widget.product.inStock 
+                                            ? (canAddToCart ? 'ADD TO CART' : 'Select Color and Size')
+                                            : 'OUT OF STOCK',
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    );
                                   },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: AppColors.redAccent,
-                                    foregroundColor: AppColors.white,
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: 16,
-                                    ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    elevation: 0,
-                                  ),
-                                  child: const Text(
-                                    'Select Color and size',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
                                 ),
                               ),
                             ],
@@ -271,7 +396,6 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
       ),
     );
   }
-
   Widget _buildIconButton(
     IconData activeIcon,
     IconData inactiveIcon,

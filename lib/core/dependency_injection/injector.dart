@@ -9,7 +9,7 @@ import 'package:fashion/core/network/api/dio_injector.dart';
 import 'package:fashion/features/categories/di/all_categories_injector.dart';
 import 'package:fashion/features/homepage/di/home_page_injector.dart';
 import 'package:fashion/features/products/di/product_injector.dart';
-//import 'package:fashion/features/favourites/di/favourite_injector.dart';
+import 'package:fashion/features/favorites/di/favorite_injector.dart';
 import 'package:get_it/get_it.dart';
 //import '../bloc_observer/bloc_observer_injector.dart';
 
@@ -37,6 +37,6 @@ Future<void> initInjection() async {
   await homepageInjector();
 
 
-  //await favouriteInjector();
+  await favoriteInjector();
   // await paymentGetwayInjector();
 }

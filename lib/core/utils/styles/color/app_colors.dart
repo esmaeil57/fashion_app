@@ -35,5 +35,6 @@ class AppColors {
   static const Color red = Color(0xffE1261D);
   static const Color redAccent = Color.fromARGB(188, 196, 65, 58);
   static const Color fontColor = Color(0xff0C82A7);
+  static const Color orange = Colors.orange;
   static const Color disabledButtonColor = Color(0xffE4E4E5);
 }
