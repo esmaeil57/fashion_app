@@ -50,27 +50,10 @@ class FavoriteCard extends StatelessWidget {
                     ),
                     child: SmartImage(
                       imageUrl: favorite.productImage,
-                      fit: BoxFit.cover,
+                      fit: BoxFit.fill,
                       width: double.infinity,
                       height: double.infinity,
                     ),
-                  ),
-                ),
-                // Favorite button (heart icon)
-                Positioned(
-                  top: 8,
-                  left: 8,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: AppColors.red,
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: const Icon(
-                      Icons.favorite,
-                      color: AppColors.white,
-                      size: 16,
-                    ),
-                    padding: const EdgeInsets.all(4),
                   ),
                 ),
                 // Remove button
@@ -86,34 +69,16 @@ class FavoriteCard extends StatelessWidget {
                         shape: BoxShape.circle,
                       ),
                       child: const Icon(
-                        Icons.close,
-                        size: 16,
-                        color: AppColors.gray,
+                        Icons.favorite,
+                        size: 24,
+                        color: AppColors.red,
                       ),
-                    ),
-                  ),
-                ),
-                // Add to cart button
-                Positioned(
-                  bottom: 8,
-                  right: 8,
-                  child: Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: AppColors.white.withOpacity(0.9),
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.add_shopping_cart,
-                      size: 20,
-                      color: AppColors.gray,
                     ),
                   ),
                 ),
               ],
             ),
           ),
-
           // Product info section
           Expanded(
             flex: 1,
@@ -138,9 +103,7 @@ class FavoriteCard extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
-
                   const SizedBox(height: 4),
-
                   // Price section
                   Row(
                     children: [
@@ -176,6 +139,31 @@ class FavoriteCard extends StatelessWidget {
                 ],
               ),
             ),
+          ),
+          SizedBox(
+            width: double.infinity,
+            child: Container(
+              margin: EdgeInsets.only(top: 8),
+              child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.white,
+                foregroundColor: AppColors.black,
+                side: const BorderSide(color: AppColors.borderLightGrayColor),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                padding: const EdgeInsets.symmetric(vertical: 12),
+              ),
+              onPressed: () {},
+              child: const Text(
+                'ADD TO CART',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+                    ),
           ),
         ],
       ),
