@@ -1,11 +1,14 @@
 import 'package:fashion/features/favorites/presentation/cubit/favorite_cubit.dart';
 import 'package:fashion/features/favorites/presentation/cubit/favorite_state.dart';
+import 'package:fashion/features/mybasket/presentation/cubit/cart_cubit.dart';
+import 'package:fashion/features/mybasket/presentation/pages/cart_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fashion/core/utils/styles/color/app_colors.dart';
 import 'package:fashion/core/dependency_injection/injector.dart';
 import 'package:fashion/features/products/domain/entities/product.dart';
 import 'package:fashion/features/products/presentation/cubit/product_cubit.dart';
+import 'package:fashion/features/products/presentation/cubit/product_state.dart';
 import 'package:fashion/features/products/presentation/widgets/prduct_details_widgets/color_section.dart';
 import 'package:fashion/features/products/presentation/widgets/prduct_details_widgets/description_section.dart';
 import 'package:fashion/features/products/presentation/widgets/prduct_details_widgets/payment_options.dart';
@@ -27,7 +30,8 @@ class ProductDetailsPage extends StatefulWidget {
 class _ProductDetailsPageState extends State<ProductDetailsPage> {
   int _currentImageIndex = 0;
   final PageController _pageController = PageController();
-  final DraggableScrollableController _bottomSheetController = DraggableScrollableController();
+  final DraggableScrollableController _bottomSheetController =
+      DraggableScrollableController();
   late FavoritesCubit _favoritesCubit;
   bool _isFavorite = false;
   bool _isLoadingFavorite = true;
@@ -59,11 +63,18 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final List<String> limitedImageUrls = widget.product.imageUrls.take(5).toList();
-    
+    final List<String> limitedImageUrls =
+        widget.product.imageUrls.take(5).toList();
+
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (_) => injector<ProductCubit>()),
+        BlocProvider(
+          create: (_) {
+            final cubit = injector<ProductCubit>();
+            cubit.initializeForSingleProduct(); // Initialize for single product
+            return cubit;
+          },
+        ),
         BlocProvider.value(value: _favoritesCubit),
       ],
       child: Scaffold(
@@ -109,9 +120,10 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                               width: 8,
                               height: _currentImageIndex == index ? 24 : 8,
                               decoration: BoxDecoration(
-                                color: _currentImageIndex == index
-                                    ? AppColors.redAccent
-                                    : AppColors.gray.withOpacity(0.3),
+                                color:
+                                    _currentImageIndex == index
+                                        ? AppColors.redAccent
+                                        : AppColors.gray.withOpacity(0.3),
                                 borderRadius: BorderRadius.circular(4),
                               ),
                             ),
@@ -210,7 +222,10 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                             children: [
                               ProductHeader(product: widget.product),
                               const SizedBox(height: 16),
-                              const Divider(thickness: 1, color: AppColors.borderColor),
+                              const Divider(
+                                thickness: 1,
+                                color: AppColors.borderColor,
+                              ),
                               const SizedBox(height: 16),
                               if (widget.product.sizes.isNotEmpty)
                                 SizeSection(sizes: widget.product.sizes),
@@ -236,7 +251,10 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                         decoration: const BoxDecoration(
                           color: AppColors.white,
                           border: Border(
-                            top: BorderSide(color: AppColors.borderColor, width: 0.5),
+                            top: BorderSide(
+                              color: AppColors.borderColor,
+                              width: 0.5,
+                            ),
                           ),
                         ),
                         child: SafeArea(
@@ -247,7 +265,9 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                 width: 50,
                                 height: 50,
                                 decoration: BoxDecoration(
-                                  border: Border.all(color: AppColors.borderColor),
+                                  border: Border.all(
+                                    color: AppColors.borderColor,
+                                  ),
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 child: IconButton(
@@ -255,7 +275,9 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                     // Share functionality
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       const SnackBar(
-                                        content: Text('Share functionality coming soon'),
+                                        content: Text(
+                                          'Share functionality coming soon',
+                                        ),
                                         duration: Duration(seconds: 2),
                                       ),
                                     );
@@ -283,14 +305,19 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                               ? '${state.productName} added to favorites'
                                               : '${state.productName} removed from favorites',
                                         ),
-                                        backgroundColor: state.isAdded ? Colors.green : Colors.orange,
+                                        backgroundColor:
+                                            state.isAdded
+                                                ? Colors.green
+                                                : Colors.orange,
                                         duration: const Duration(seconds: 2),
                                       ),
                                     );
                                   } else if (state is FavoritesError) {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
-                                        content: Text('Error: ${state.message}'),
+                                        content: Text(
+                                          'Error: ${state.message}',
+                                        ),
                                         backgroundColor: Colors.red,
                                         duration: const Duration(seconds: 2),
                                       ),
@@ -301,81 +328,199 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                   width: 50,
                                   height: 50,
                                   decoration: BoxDecoration(
-                                    border: Border.all(color: AppColors.borderColor),
+                                    border: Border.all(
+                                      color: AppColors.borderColor,
+                                    ),
                                     borderRadius: BorderRadius.circular(12),
                                   ),
-                                  child: _isLoadingFavorite
-                                      ? Container(
-                                          padding: const EdgeInsets.all(12),
-                                          child: const CircularProgressIndicator(
-                                            strokeWidth: 2,
-                                            valueColor: AlwaysStoppedAnimation<Color>(Colors.grey),
+                                  child:
+                                      _isLoadingFavorite
+                                          ? Container(
+                                            padding: const EdgeInsets.all(12),
+                                            child:
+                                                const CircularProgressIndicator(
+                                                  strokeWidth: 2,
+                                                  valueColor:
+                                                      AlwaysStoppedAnimation<
+                                                        Color
+                                                      >(Colors.grey),
+                                                ),
+                                          )
+                                          : _buildIconButton(
+                                            Icons.favorite,
+                                            Icons.favorite_border,
+                                            _isFavorite,
+                                            () {
+                                              if (!_isLoadingFavorite) {
+                                                _favoritesCubit.toggleFavorite(
+                                                  widget.product,
+                                                );
+                                              }
+                                            },
+                                            backgroundColor: Colors.white,
                                           ),
-                                        )
-                                      : _buildIconButton(
-                                          Icons.favorite,
-                                          Icons.favorite_border,
-                                          _isFavorite,
-                                          () {
-                                            if (!_isLoadingFavorite) {
-                                              _favoritesCubit.toggleFavorite(widget.product);
-                                            }
-                                          },
-                                          backgroundColor: Colors.white,
-                                        ),
                                 ),
                               ),
                               const SizedBox(width: 12),
-                              
-                              // Select Button
+
+                              // Add to Cart Button
                               Expanded(
-                                child: BlocBuilder<ProductCubit, dynamic>(
+                                child: BlocBuilder<ProductCubit, ProductState>(
                                   builder: (context, state) {
-                                    final hasSelectedSize = state.selectedSize != null;
-                                    final hasSelectedColor = state.selectedColor != null;
-                                    final canAddToCart = hasSelectedSize || hasSelectedColor || 
-                                        (widget.product.sizes.isEmpty && widget.product.colors.isEmpty);
+                                    // Check if selections are required and made
+                                    final needsSize =
+                                        widget.product.sizes.isNotEmpty;
+                                    final needsColor =
+                                        widget.product.colors.isNotEmpty;
+                                    final hasSelectedSize =
+                                        state.selectedSize != null &&
+                                        state.selectedSize!.isNotEmpty;
+                                    final hasSelectedColor =
+                                        state.selectedColor != null &&
+                                        state.selectedColor!.isNotEmpty;
+
+                                    final isReady =
+                                        (!needsSize || hasSelectedSize) &&
+                                        (!needsColor || hasSelectedColor);
+
+                                    String buttonText;
+                                    if (!widget.product.inStock) {
+                                      buttonText = 'OUT OF STOCK';
+                                    } else if (isReady) {
+                                      buttonText = 'ADD TO CART';
+                                    } else {
+                                      buttonText = 'CHOOSE SIZE AND COLOR';
+                                    }
 
                                     return ElevatedButton(
-                                      onPressed: widget.product.inStock ? () {
-                                        if (canAddToCart) {
-                                          // Add to cart functionality
-                                          context.read<ProductCubit>().toggleCart(widget.product.id);
-                                          ScaffoldMessenger.of(context).showSnackBar(
-                                            SnackBar(
-                                              content: Text('${widget.product.name} added to cart'),
-                                              backgroundColor: Colors.green,
-                                              duration: const Duration(seconds: 2),
-                                            ),
-                                          );
-                                        } else {
-                                          ScaffoldMessenger.of(context).showSnackBar(
-                                            const SnackBar(
-                                              content: Text('Please select size and color'),
-                                              backgroundColor: Colors.orange,
-                                              duration: Duration(seconds: 2),
-                                            ),
-                                          );
-                                        }
-                                      } : null,
+                                      onPressed:
+                                          widget.product.inStock
+                                              ? () {
+                                                if (isReady) {
+                                                  // Add to cart using CartCubit
+                                                  final cartCubit =
+                                                      injector<CartCubit>();
+                                                  cartCubit.addItemToCart(
+                                                    productId:
+                                                        widget.product.id,
+                                                    productName:
+                                                        widget.product.name,
+                                                    imageUrl:
+                                                        widget
+                                                                .product
+                                                                .imageUrls
+                                                                .isNotEmpty
+                                                            ? widget
+                                                                .product
+                                                                .imageUrls
+                                                                .first
+                                                            : '',
+                                                    price: widget.product.price,
+                                                    salePrice:
+                                                        widget
+                                                            .product
+                                                            .salePrice,
+                                                    selectedSize:
+                                                        state.selectedSize ??
+                                                        '',
+                                                    selectedColor:
+                                                        state.selectedColor ??
+                                                        '',
+                                                    categoryName:
+                                                        widget
+                                                            .product
+                                                            .categoryName,
+                                                    availableSizes:
+                                                        widget.product.sizes,
+                                                    availableColors:
+                                                        widget.product.colors,
+                                                    isOnSale:
+                                                        widget.product.isOnSale,
+                                                  );
+
+                                                  // Show success message with cart navigation
+                                                  ScaffoldMessenger.of(
+                                                    context,
+                                                  ).showSnackBar(
+                                                    SnackBar(
+                                                      content: Text(
+                                                        '${widget.product.name} added to cart',
+                                                      ),
+                                                      backgroundColor:
+                                                          Colors.green,
+                                                      duration: const Duration(
+                                                        seconds: 3,
+                                                      ),
+                                                      action: SnackBarAction(
+                                                        label: 'View Cart',
+                                                        textColor: Colors.white,
+                                                        onPressed: () {
+                                                          Navigator.push(
+                                                            context,
+                                                            MaterialPageRoute(
+                                                              builder:
+                                                                  (context) =>
+                                                                      const CartPage(),
+                                                            ),
+                                                          );
+                                                        },
+                                                      ),
+                                                    ),
+                                                  );
+                                                } else {
+                                                  // Show message about required selections
+                                                  String message =
+                                                      'Please select ';
+                                                  List<String> required = [];
+                                                  if (needsSize &&
+                                                      !hasSelectedSize)
+                                                    required.add('size');
+                                                  if (needsColor &&
+                                                      !hasSelectedColor)
+                                                    required.add('color');
+                                                  message += required.join(
+                                                    ' and ',
+                                                  );
+
+                                                  ScaffoldMessenger.of(
+                                                    context,
+                                                  ).showSnackBar(
+                                                    SnackBar(
+                                                      content: Text(message),
+                                                      backgroundColor:
+                                                          Colors.orange,
+                                                      duration: const Duration(
+                                                        seconds: 2,
+                                                      ),
+                                                    ),
+                                                  );
+                                                }
+                                              }
+                                              : null,
                                       style: ElevatedButton.styleFrom(
-                                        backgroundColor: widget.product.inStock 
-                                            ? AppColors.redAccent 
-                                            : Colors.grey,
+                                        backgroundColor:
+                                            widget.product.inStock
+                                                ? (isReady
+                                                    ? AppColors.redAccent
+                                                    : AppColors.red)
+                                                : Colors.grey,
                                         foregroundColor: AppColors.white,
-                                        padding: const EdgeInsets.symmetric(vertical: 16),
+                                        padding: const EdgeInsets.symmetric(
+                                          vertical: 16,
+                                        ),
                                         shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(12),
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
                                         ),
                                         elevation: 0,
                                       ),
                                       child: Text(
-                                        widget.product.inStock 
-                                            ? (canAddToCart ? 'ADD TO CART' : 'Select Color and Size')
-                                            : 'OUT OF STOCK',
+                                        buttonText,
                                         style: const TextStyle(
                                           fontSize: 16,
-                                          fontWeight: FontWeight.w500,
+                                          fontWeight: FontWeight.w600,
+                                          letterSpacing: 0.5,
                                         ),
                                       ),
                                     );
@@ -396,6 +541,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
       ),
     );
   }
+
   Widget _buildIconButton(
     IconData activeIcon,
     IconData inactiveIcon,

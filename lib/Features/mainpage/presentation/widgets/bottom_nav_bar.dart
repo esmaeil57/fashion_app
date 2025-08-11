@@ -1,11 +1,11 @@
 import 'package:fashion/core/dependency_injection/injector.dart';
 import 'package:fashion/features/categories/domain/usecase/get_categories.dart';
 import 'package:fashion/features/categories/presentation/cubit/category_cubit.dart';
+import 'package:fashion/features/mybasket/presentation/pages/cart_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../cubit/navigation_cubit.dart';
 import '../cubit/navigation_state.dart';
-import '../../../mybasket/presentation/pages/basket_page.dart';
 import '../../../categories/presentation/pages/categories_page.dart';
 import '../../../favorites/presentation/pages/favorites_page.dart';
 import '../../../homepage/presentation/pages/home_page.dart';
@@ -18,7 +18,7 @@ class MainPage extends StatelessWidget {
     create: (_) => CategoryCubit(getCategories: injector<GetCategories>())..loadCategories(),
     child: const CategoriesPage(),
   ),
-  BasketPage(),
+  CartPage(),
   FavoritesPage(),
   ProfilePage(),
 ];

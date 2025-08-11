@@ -1,4 +1,7 @@
+import 'package:fashion/core/dependency_injection/injector.dart';
 import 'package:fashion/core/utils/styles/color/app_colors.dart';
+import 'package:fashion/features/mybasket/presentation/cubit/cart_cubit.dart';
+import 'package:fashion/features/mybasket/presentation/pages/cart_page.dart';
 import 'package:fashion/features/products/presentation/pages/product_details_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -363,65 +366,81 @@ class _ProductQuickReviewState extends State<ProductQuickReview> {
           ),
 
           // Bottom Button
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(20),
-            child: BlocBuilder<ProductCubit, ProductState>(
-              builder: (context, state) {
-                final isReady =
-                    state.selectedSize != null && state.selectedColor != null;
-                final buttonText =
-                    isReady ? 'ADD TO CART' : 'CHOOSE A SIZE AND COLOR';
+        Container(
+  width: double.infinity,
+  padding: const EdgeInsets.all(20),
+  child: BlocBuilder<ProductCubit, ProductState>(
+    builder: (context, state) {
+      final isReady = state.selectedSize != null && state.selectedColor != null;
+      final buttonText = isReady ? 'ADD TO CART' : 'CHOOSE A SIZE AND COLOR';
 
-                return ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                        isReady
-                            ? AppColors.redAccent
-                            :  AppColors.red,
-                    foregroundColor: AppColors.white,
-                    minimumSize: const Size.fromHeight(52),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    elevation: 0,
-                  ),
-                  onPressed:
-                      widget.product.inStock
-                          ? () {
-                            if (isReady) {
-                              // Add to cart functionality
-                              context.read<ProductCubit>().toggleCart(
-                                widget.product.id,
-                              );
-                              Navigator.pop(context);
-
-                              // Show success message
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(
-                                    '${widget.product.name} added to cart',
-                                  ),
-                                  backgroundColor: Colors.green,
-                                  duration: const Duration(seconds: 2),
-                                ),
-                              );
-                            }
-                          }
-                          : null,
-                  child: Text(
-                    widget.product.inStock ? buttonText : 'OUT OF STOCK',
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      letterSpacing: 0.5,
-                    ),
-                  ),
-                );
-              },
-            ),
+      return ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: isReady ? AppColors.redAccent : AppColors.red,
+          foregroundColor: AppColors.white,
+          minimumSize: const Size.fromHeight(52),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
           ),
-        ],
+          elevation: 0,
+        ),
+        onPressed: widget.product.inStock ? () {
+          if (isReady) {
+            // Add to cart using CartCubit
+            final cartCubit = injector<CartCubit>();
+            cartCubit.addItemToCart(
+              productId: widget.product.id,
+              productName: widget.product.name,
+              imageUrl: widget.product.imageUrls.isNotEmpty 
+                  ? widget.product.imageUrls.first 
+                  : '',
+              price: widget.product.price,
+              salePrice: widget.product.salePrice,
+              selectedSize: state.selectedSize!,
+              selectedColor: state.selectedColor!,
+              categoryName: widget.product.categoryName,
+              availableSizes: widget.product.sizes,
+              availableColors: widget.product.colors,
+              isOnSale: widget.product.isOnSale,
+            );
+            
+            Navigator.pop(context);
+
+            // Show success message with cart navigation
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('${widget.product.name} added to cart'),
+                backgroundColor: Colors.green,
+                duration: const Duration(seconds: 3),
+                action: SnackBarAction(
+                  label: 'View Cart',
+                  textColor: Colors.white,
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const CartPage(),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            );
+          }
+        } : null,
+        child: Text(
+          widget.product.inStock ? buttonText : 'OUT OF STOCK',
+          style: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0.5,
+          ),
+        ),
+      );
+    },
+  ),
+),
+      ],
       ),
     );
   }

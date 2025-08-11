@@ -18,6 +18,15 @@ class ProductCubit extends Cubit<ProductState> {
     required this.searchProducts,
   }) : super(ProductInitial());
 
+  // New method to initialize for single product (for product details page)
+  void initializeForSingleProduct() {
+    emit(ProductLoaded(
+      products: [],
+      isGridView: _isGridView,
+      searchQuery: _searchQuery,
+    ));
+  }
+
   Future<void> loadProducts(String categoryId) async {
     _currentCategoryId = categoryId;
     emit(ProductLoading());
@@ -103,6 +112,7 @@ class ProductCubit extends Cubit<ProductState> {
   }
 
   void selectSize(String size) {
+    // Handle both ProductInitial and ProductLoaded states
     if (state is ProductLoaded) {
       final currentState = state as ProductLoaded;
       emit(
@@ -114,10 +124,22 @@ class ProductCubit extends Cubit<ProductState> {
           selectedColor: currentState.selectedColor,
         ),
       );
+    } else {
+      // If state is not ProductLoaded, initialize it first
+      emit(
+        ProductLoaded(
+          products: [],
+          isGridView: _isGridView,
+          searchQuery: _searchQuery,
+          selectedSize: size,
+          selectedColor: null,
+        ),
+      );
     }
   }
 
-  void selectColor(String color , int colorIndex) {
+  void selectColor(String color, int colorIndex) {
+    // Handle both ProductInitial and ProductLoaded states
     if (state is ProductLoaded) {
       final currentState = state as ProductLoaded;
       emit(
@@ -127,6 +149,33 @@ class ProductCubit extends Cubit<ProductState> {
           searchQuery: currentState.searchQuery,
           selectedSize: currentState.selectedSize,
           selectedColor: color,
+        ),
+      );
+    } else {
+      // If state is not ProductLoaded, initialize it first
+      emit(
+        ProductLoaded(
+          products: [],
+          isGridView: _isGridView,
+          searchQuery: _searchQuery,
+          selectedSize: null,
+          selectedColor: color,
+        ),
+      );
+    }
+  }
+
+  // Method to clear selections
+  void clearSelections() {
+    if (state is ProductLoaded) {
+      final currentState = state as ProductLoaded;
+      emit(
+        ProductLoaded(
+          products: currentState.products,
+          isGridView: currentState.isGridView,
+          searchQuery: currentState.searchQuery,
+          selectedSize: null,
+          selectedColor: null,
         ),
       );
     }
