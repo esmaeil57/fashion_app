@@ -14,6 +14,7 @@ class ProductLoading extends ProductState {}
 
 class ProductLoaded extends ProductState {
   final List<Product> products;
+  @override
   final int? selectedColorIndex;
   final bool isGridView;
   final String searchQuery;

@@ -59,7 +59,7 @@ class CategoryGrid extends StatelessWidget {
   }
 
   Widget _buildEmptyState() {
-    return Container(
+    return SizedBox(
       height: 120,
       child: Center(
         child: Column(

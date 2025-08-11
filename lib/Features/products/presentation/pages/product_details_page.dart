@@ -20,9 +20,7 @@ import 'package:fashion/features/products/presentation/widgets/prduct_details_wi
 
 class ProductDetailsPage extends StatefulWidget {
   final Product product;
-
   const ProductDetailsPage({super.key, required this.product});
-
   @override
   State<ProductDetailsPage> createState() => _ProductDetailsPageState();
 }
@@ -35,14 +33,12 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
   late FavoritesCubit _favoritesCubit;
   bool _isFavorite = false;
   bool _isLoadingFavorite = true;
-
   @override
   void initState() {
     super.initState();
     _favoritesCubit = injector<FavoritesCubit>();
     _checkFavoriteStatus();
   }
-
   void _checkFavoriteStatus() async {
     setState(() => _isLoadingFavorite = true);
     final isFav = await _favoritesCubit.checkIsFavorite(widget.product.id);
@@ -53,19 +49,16 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
       });
     }
   }
-
   @override
   void dispose() {
     _pageController.dispose();
     _bottomSheetController.dispose();
     super.dispose();
   }
-
   @override
   Widget build(BuildContext context) {
     final List<String> limitedImageUrls =
         widget.product.imageUrls.take(5).toList();
-
     return MultiBlocProvider(
       providers: [
         BlocProvider(
@@ -290,7 +283,6 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                 ),
                               ),
                               const SizedBox(width: 12),
-
                               // Favorite Button with BlocListener
                               BlocListener<FavoritesCubit, FavoritesState>(
                                 listener: (context, state) {
@@ -362,7 +354,6 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                 ),
                               ),
                               const SizedBox(width: 12),
-
                               // Add to Cart Button
                               Expanded(
                                 child: BlocBuilder<ProductCubit, ProductState>(
@@ -378,11 +369,9 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                     final hasSelectedColor =
                                         state.selectedColor != null &&
                                         state.selectedColor!.isNotEmpty;
-
                                     final isReady =
                                         (!needsSize || hasSelectedSize) &&
                                         (!needsColor || hasSelectedColor);
-
                                     String buttonText;
                                     if (!widget.product.inStock) {
                                       buttonText = 'OUT OF STOCK';
@@ -437,7 +426,6 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                                     isOnSale:
                                                         widget.product.isOnSale,
                                                   );
-
                                                   // Show success message with cart navigation
                                                   ScaffoldMessenger.of(
                                                     context,
@@ -473,15 +461,16 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                                       'Please select ';
                                                   List<String> required = [];
                                                   if (needsSize &&
-                                                      !hasSelectedSize)
+                                                      !hasSelectedSize) {
                                                     required.add('size');
+                                                  }
                                                   if (needsColor &&
-                                                      !hasSelectedColor)
+                                                      !hasSelectedColor) {
                                                     required.add('color');
-                                                  message += required.join(
-                                                    ' and ',
-                                                  );
-
+                                                    message += required.join(
+                                                      ' and ',
+                                                    );
+                                                  }
                                                   ScaffoldMessenger.of(
                                                     context,
                                                   ).showSnackBar(
