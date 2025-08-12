@@ -3,26 +3,29 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../cubit/product_cubit.dart';
 import '../cubit/product_state.dart';
 
-enum SortOption { 
-  recommended, 
-  lowestPrice, 
-  highestPrice, 
-}
+enum SortOption { recommended, lowestPrice, highestPrice }
 
-class SortAndViewToggle extends StatelessWidget {
+class SortAndViewToggle extends StatefulWidget {
   const SortAndViewToggle({super.key});
 
-  void _showSortOptions(BuildContext context) {
-    SortOption selectedOption = SortOption.recommended;
+  @override
+  State<SortAndViewToggle> createState() => _SortAndViewToggleState();
+}
+
+class _SortAndViewToggleState extends State<SortAndViewToggle> {
+  SortOption _selectedOption = SortOption.recommended;
+
+  void _showSortOptions(BuildContext parentContext) {
+    SortOption selectedOption = _selectedOption;
 
     showModalBottomSheet(
-      context: context,
+      context: parentContext,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (_) {
+      builder: (bottomSheetContext) {
         return StatefulBuilder(
-          builder: (context, setState) {
+          builder: (context, setStateSheet) {
             return SafeArea(
               child: Padding(
                 padding: const EdgeInsets.symmetric(
@@ -32,7 +35,6 @@ class SortAndViewToggle extends StatelessWidget {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    // Handle bar
                     Container(
                       width: 80,
                       height: 4,
@@ -42,12 +44,11 @@ class SortAndViewToggle extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 5),
-                    // Header
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         TextButton(
-                          onPressed: () => Navigator.pop(context),
+                          onPressed: () => Navigator.pop(bottomSheetContext),
                           child: const Text(
                             "Cancel",
                             style: TextStyle(
@@ -75,9 +76,13 @@ class SortAndViewToggle extends StatelessWidget {
                         ),
                         TextButton(
                           onPressed: () {
-                            // Apply the selected sort option
+                            // Save choice to widget state
+                            setState(() {
+                              _selectedOption = selectedOption;
+                            });
+                            // Map choice to sort string
                             String sortBy;
-                            switch (selectedOption) {
+                            switch (_selectedOption) {
                               case SortOption.lowestPrice:
                                 sortBy = 'price_low_to_high';
                                 break;
@@ -87,9 +92,11 @@ class SortAndViewToggle extends StatelessWidget {
                               default:
                                 sortBy = 'recommended';
                             }
-                            
-                            context.read<ProductCubit>().sortProducts(sortBy);
-                            Navigator.pop(context);
+                            // Call cubit sort
+                            parentContext.read<ProductCubit>().sortProducts(
+                              sortBy,
+                            );
+                            Navigator.pop(bottomSheetContext);
                           },
                           child: const Text(
                             "Apply",
@@ -103,28 +110,33 @@ class SortAndViewToggle extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 16),
-                    // Sorting Options
                     Column(
                       children: [
                         _buildSortOption(
                           'Recommended Sorting',
                           SortOption.recommended,
                           selectedOption,
-                          setState,
+                          (newValue) => setStateSheet(() {
+                            selectedOption = newValue;
+                          }),
                         ),
                         const Divider(thickness: 1, color: Colors.grey),
                         _buildSortOption(
                           'Lowest Price',
                           SortOption.lowestPrice,
                           selectedOption,
-                          setState,
+                          (newValue) => setStateSheet(() {
+                            selectedOption = newValue;
+                          }),
                         ),
                         const Divider(thickness: 1, color: Colors.grey),
                         _buildSortOption(
                           'Highest Price',
                           SortOption.highestPrice,
                           selectedOption,
-                          setState,
+                          (newValue) => setStateSheet(() {
+                            selectedOption = newValue;
+                          }),
                         ),
                       ],
                     ),
@@ -142,16 +154,16 @@ class SortAndViewToggle extends StatelessWidget {
     String title,
     SortOption value,
     SortOption selectedOption,
-    StateSetter setState,
+    ValueChanged<SortOption> onChanged,
   ) {
     return RadioListTile<SortOption>(
       title: Text(title),
       value: value,
       groupValue: selectedOption,
       onChanged: (SortOption? newValue) {
-        setState(() {
-          selectedOption = newValue!;
-        });
+        if (newValue != null) {
+          onChanged(newValue);
+        }
       },
       activeColor: Colors.red,
       contentPadding: EdgeInsets.zero,
