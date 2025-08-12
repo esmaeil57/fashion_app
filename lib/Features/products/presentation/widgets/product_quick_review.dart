@@ -69,7 +69,9 @@ class _ProductQuickReviewState extends State<ProductQuickReview> {
                   ),
                 ),
                 GestureDetector(
-                  onTap: () => Navigator.of(context).pop(),
+                  onTap: () => {
+                    context.read<ProductCubit>().clearSelections(),
+                    Navigator.of(context).pop(),},
                   child: const Text(
                     'Cancel',
                     style: TextStyle(
@@ -218,7 +220,7 @@ class _ProductQuickReviewState extends State<ProductQuickReview> {
                                         onTap:
                                             () => context
                                                 .read<ProductCubit>()
-                                                .selectColor(color, index?? 0),
+                                                .selectColor(color, index ?? 0),
                                         child: Container(
                                           padding: const EdgeInsets.all(3),
                                           decoration: BoxDecoration(
@@ -366,81 +368,91 @@ class _ProductQuickReviewState extends State<ProductQuickReview> {
           ),
 
           // Bottom Button
-        Container(
-  width: double.infinity,
-  padding: const EdgeInsets.all(20),
-  child: BlocBuilder<ProductCubit, ProductState>(
-    builder: (context, state) {
-      final isReady = state.selectedSize != null && state.selectedColor != null;
-      final buttonText = isReady ? 'ADD TO CART' : 'CHOOSE A SIZE AND COLOR';
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(20),
+            child: BlocBuilder<ProductCubit, ProductState>(
+              builder: (context, state) {
+                final isReady =
+                    state.selectedSize != null && state.selectedColor != null;
+                final buttonText =
+                    isReady ? 'ADD TO CART' : 'CHOOSE A SIZE AND COLOR';
 
-      return ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: isReady ? AppColors.redAccent : AppColors.red,
-          foregroundColor: AppColors.white,
-          minimumSize: const Size.fromHeight(52),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          elevation: 0,
-        ),
-        onPressed: widget.product.inStock ? () {
-          if (isReady) {
-            // Add to cart using CartCubit
-            final cartCubit = injector<CartCubit>();
-            cartCubit.addItemToCart(
-              productId: widget.product.id,
-              productName: widget.product.name,
-              imageUrl: widget.product.imageUrls.isNotEmpty 
-                  ? widget.product.imageUrls.first 
-                  : '',
-              price: widget.product.price,
-              salePrice: widget.product.salePrice,
-              selectedSize: state.selectedSize!,
-              selectedColor: state.selectedColor!,
-              categoryName: widget.product.categoryName,
-              availableSizes: widget.product.sizes,
-              availableColors: widget.product.colors,
-              isOnSale: widget.product.isOnSale,
-            );
-            
-            Navigator.pop(context);
+                return ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor:
+                        isReady ? AppColors.red : AppColors.redAccent,
+                    foregroundColor: AppColors.white,
+                    minimumSize: const Size.fromHeight(52),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    elevation: 0,
+                  ),
+                  onPressed:
+                      widget.product.inStock
+                          ? () {
+                            if (isReady) {
+                              // Add to cart using CartCubit
+                              final cartCubit = injector<CartCubit>();
+                              cartCubit.addItemToCart(
+                                productId: widget.product.id,
+                                productName: widget.product.name,
+                                imageUrl:
+                                    widget.product.imageUrls.isNotEmpty
+                                        ? widget.product.imageUrls.first
+                                        : '',
+                                price: widget.product.price,
+                                salePrice: widget.product.salePrice,
+                                selectedSize: state.selectedSize!,
+                                selectedColor: state.selectedColor!,
+                                categoryName: widget.product.categoryName,
+                                availableSizes: widget.product.sizes,
+                                availableColors: widget.product.colors,
+                                isOnSale: widget.product.isOnSale,
+                              );
 
-            // Show success message with cart navigation
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('${widget.product.name} added to cart'),
-                backgroundColor: Colors.green,
-                duration: const Duration(seconds: 3),
-                action: SnackBarAction(
-                  label: 'View Cart',
-                  textColor: Colors.white,
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const CartPage(),
-                      ),
-                    );
-                  },
-                ),
-              ),
-            );
-          }
-        } : null,
-        child: Text(
-          widget.product.inStock ? buttonText : 'OUT OF STOCK',
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            letterSpacing: 0.5,
+                              Navigator.pop(context);
+
+                              // Show success message with cart navigation
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    '${widget.product.name} added to cart',
+                                  ),
+                                  backgroundColor: Colors.green,
+                                  duration: const Duration(seconds: 3),
+                                  action: SnackBarAction(
+                                    label: 'View Cart',
+                                    textColor: Colors.white,
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder:
+                                              (context) => const CartPage(),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ),
+                              );
+                            }
+                          }
+                          : null,
+                  child: Text(
+                    widget.product.inStock ? buttonText : 'OUT OF STOCK',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                );
+              },
+            ),
           ),
-        ),
-      );
-    },
-  ),
-),
-      ],
+        ],
       ),
     );
   }

@@ -39,6 +39,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
     _favoritesCubit = injector<FavoritesCubit>();
     _checkFavoriteStatus();
   }
+
   void _checkFavoriteStatus() async {
     setState(() => _isLoadingFavorite = true);
     final isFav = await _favoritesCubit.checkIsFavorite(widget.product.id);
@@ -49,12 +50,14 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
       });
     }
   }
+
   @override
   void dispose() {
     _pageController.dispose();
     _bottomSheetController.dispose();
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     final List<String> limitedImageUrls =
@@ -380,7 +383,6 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                     } else {
                                       buttonText = 'CHOOSE SIZE AND COLOR';
                                     }
-
                                     return ElevatedButton(
                                       onPressed:
                                           widget.product.inStock
@@ -490,8 +492,8 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                         backgroundColor:
                                             widget.product.inStock
                                                 ? (isReady
-                                                    ? AppColors.redAccent
-                                                    : AppColors.red)
+                                                    ? AppColors.red
+                                                    : AppColors.redAccent)
                                                 : Colors.grey,
                                         foregroundColor: AppColors.white,
                                         padding: const EdgeInsets.symmetric(

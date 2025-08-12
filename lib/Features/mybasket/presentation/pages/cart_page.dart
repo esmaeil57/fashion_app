@@ -240,7 +240,7 @@ class _CartPageState extends State<CartPage> {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
                       content: Text('Campaign code functionality coming soon'),
-                      backgroundColor: Colors.blue,
+                      backgroundColor: AppColors.gray,
                       duration: Duration(seconds: 2),
                     ),
                   );

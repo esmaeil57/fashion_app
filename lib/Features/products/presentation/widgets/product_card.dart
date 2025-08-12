@@ -32,6 +32,7 @@ class _ProductCardState extends State<ProductCard> {
   final PageController _pageController = PageController();
   late FavoritesCubit _favoritesCubit;
   bool _isFavorite = false;
+  bool _isLoadingFavorite = true;
 
   @override
   void initState() {
@@ -41,10 +42,13 @@ class _ProductCardState extends State<ProductCard> {
   }
 
   void _checkFavoriteStatus() async {
+    if (!mounted) return;
+    setState(() => _isLoadingFavorite = true);
     final isFav = await _favoritesCubit.checkIsFavorite(widget.product.id);
     if (mounted) {
       setState(() {
         _isFavorite = isFav;
+        _isLoadingFavorite = false;
       });
     }
   }
@@ -71,6 +75,7 @@ class _ProductCardState extends State<ProductCard> {
           child: BlocListener<FavoritesCubit, FavoritesState>(
             listener: (context, favState) {
               if (favState is FavoriteToggleSuccess) {
+                // Update local state immediately for this specific product
                 setState(() {
                   _isFavorite = favState.isAdded;
                 });
@@ -81,17 +86,29 @@ class _ProductCardState extends State<ProductCard> {
                           ? '${favState.productName} added to favorites'
                           : '${favState.productName} removed from favorites',
                     ),
-                    backgroundColor: favState.isAdded ? Colors.green : Colors.orange,
+                    backgroundColor:
+                        favState.isAdded ? Colors.green : Colors.orange,
                     duration: const Duration(seconds: 2),
                   ),
                 );
+              } else if (favState is FavoritesLoaded) {
+                // Check if this product's favorite status has changed
+                final isCurrentlyFavorite = favState.favoriteProductIds
+                    .contains(widget.product.id);
+                if (_isFavorite != isCurrentlyFavorite) {
+                  setState(() {
+                    _isFavorite = isCurrentlyFavorite;
+                    _isLoadingFavorite = false;
+                  });
+                }
               }
             },
             child: GestureDetector(
               onTap: () => _navigateToProductDetails(context),
-              child: widget.isGridView
-                  ? _buildGridCard(context, _isFavorite, isInCart)
-                  : _buildListCard(context, _isFavorite, isInCart),
+              child:
+                  widget.isGridView
+                      ? _buildGridCard(context, _isFavorite, isInCart)
+                      : _buildListCard(context, _isFavorite, isInCart),
             ),
           ),
         );
@@ -99,29 +116,34 @@ class _ProductCardState extends State<ProductCard> {
     );
   }
 
-  void _navigateToProductDetails(BuildContext context) {
-    Navigator.push(
+  void _navigateToProductDetails(BuildContext context) async {
+    // Navigate to product details and wait for result
+    await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => ProductDetailsPage(product: widget.product),
       ),
     );
+    // Refresh favorite status when returning from product details
+    _checkFavoriteStatus();
   }
 
   Product? _getProductFromState(ProductState state) {
     if (state is ProductLoaded) {
       return state.products.firstWhere(
         (p) => p.id == widget.product.id,
-        orElse: () => widget.product is ProductModel
-            ? widget.product as ProductModel
-            : ProductModel(
-                id: widget.product.id,
-                name: widget.product.name,
-                imageUrls: widget.product.imageUrls,
-                price: widget.product.price,
-                categoryId: widget.product.categoryId,
-                categoryName: widget.product.categoryName,
-              ),
+        orElse:
+            () =>
+                widget.product is ProductModel
+                    ? widget.product as ProductModel
+                    : ProductModel(
+                      id: widget.product.id,
+                      name: widget.product.name,
+                      imageUrls: widget.product.imageUrls,
+                      price: widget.product.price,
+                      categoryId: widget.product.categoryId,
+                      categoryName: widget.product.categoryName,
+                    ),
       );
     }
     return null;
@@ -253,7 +275,9 @@ class _ProductCardState extends State<ProductCard> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: List.generate(
-          widget.product.imageUrls.length > 6 ? 6 : widget.product.imageUrls.length,
+          widget.product.imageUrls.length > 6
+              ? 6
+              : widget.product.imageUrls.length,
           (index) => AnimatedContainer(
             duration: const Duration(milliseconds: 300),
             margin: const EdgeInsets.symmetric(horizontal: 3),
@@ -261,7 +285,8 @@ class _ProductCardState extends State<ProductCard> {
             height: 8,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(4),
-              color: index == _currentImageIndex ? Colors.red : Colors.grey[300],
+              color:
+                  index == _currentImageIndex ? Colors.red : Colors.grey[300],
             ),
           ),
         ),
@@ -269,7 +294,11 @@ class _ProductCardState extends State<ProductCard> {
     );
   }
 
-  Widget _buildImageSection(BuildContext context, bool isFavorite, bool isInCart) {
+  Widget _buildImageSection(
+    BuildContext context,
+    bool isFavorite,
+    bool isInCart,
+  ) {
     return Stack(
       children: [
         Container(
@@ -289,17 +318,50 @@ class _ProductCardState extends State<ProductCard> {
             child: _buildImageCarousel(),
           ),
         ),
-        // Favorite button
+        // Favorite button with loading state
         Positioned(
           top: 12,
           right: 12,
-          child: _buildIconButton(
-            Icons.favorite,
-            Icons.favorite_border,
-            isFavorite,
-            () => _favoritesCubit.toggleFavorite(widget.product),
-            backgroundColor: Colors.white,
-          ),
+          child:
+              _isLoadingFavorite
+                  ? Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 4,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: const Center(
+                      child: SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            Colors.grey,
+                          ),
+                        ),
+                      ),
+                    ),
+                  )
+                  : _buildIconButton(
+                    Icons.favorite,
+                    Icons.favorite_border,
+                    isFavorite,
+                    () {
+                      if (!_isLoadingFavorite) {
+                        _favoritesCubit.toggleFavorite(widget.product);
+                      }
+                    },
+                    backgroundColor: Colors.white,
+                  ),
         ),
         // Cart button
         Positioned(
@@ -325,23 +387,21 @@ class _ProductCardState extends State<ProductCard> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Flexible(
-            child: Expanded(
-              child: Text(
-                widget.product.name.length > 20
-                    ? '${widget.product.name.substring(0, 15)}...'
-                    : widget.product.name,
-                style: TextStyle(
-                  fontSize: isListView ? 16 : 14,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.black87,
-                ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
+            child: Text(
+              widget.product.name.length > 20
+                  ? '${widget.product.name.substring(0, 15)}...'
+                  : widget.product.name,
+              style: TextStyle(
+                fontSize: isListView ? 16 : 14,
+                fontWeight: FontWeight.w500,
+                color: Colors.black87,
               ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
           const SizedBox(height: 4),
-          Expanded(child: _buildPriceSection(isListView)),
+          _buildPriceSection(isListView),
         ],
       ),
     );
@@ -354,15 +414,28 @@ class _ProductCardState extends State<ProductCard> {
     VoidCallback onPressed, {
     Color backgroundColor = Colors.white,
   }) {
-    return IconButton(
-      padding: const EdgeInsets.all(8),
-      constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
-      icon: Icon(
-        isActive ? activeIcon : inactiveIcon,
-        color: isActive ? Colors.red : Colors.grey[600],
-        size: 25,
+    return Container(
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
-      onPressed: onPressed,
+      child: IconButton(
+        padding: const EdgeInsets.all(8),
+        constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
+        icon: Icon(
+          isActive ? activeIcon : inactiveIcon,
+          color: isActive ? Colors.red : Colors.grey[600],
+          size: 22,
+        ),
+        onPressed: onPressed,
+      ),
     );
   }
 
@@ -412,7 +485,10 @@ class _ProductCardState extends State<ProductCard> {
 
     return PageView.builder(
       controller: _pageController,
-      itemCount: widget.product.imageUrls.length > 6 ? 6 : widget.product.imageUrls.length,
+      itemCount:
+          widget.product.imageUrls.length > 6
+              ? 6
+              : widget.product.imageUrls.length,
       onPageChanged: (index) {
         setState(() {
           _currentImageIndex = index;
@@ -437,10 +513,11 @@ class _ProductCardState extends State<ProductCard> {
               ),
             );
           },
-          errorBuilder: (context, error, stackTrace) => Container(
-            color: Colors.grey[200],
-            child: const Icon(Icons.image, size: 50, color: Colors.grey),
-          ),
+          errorBuilder:
+              (context, error, stackTrace) => Container(
+                color: Colors.grey[200],
+                child: const Icon(Icons.image, size: 50, color: Colors.grey),
+              ),
         );
       },
     );
@@ -452,17 +529,20 @@ class _ProductCardState extends State<ProductCard> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => Container(
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-        ),
-        child: BlocProvider.value(
-          value: cubit,
-          child: ProductQuickReview(product: widget.product),
-        ),
-      ),
-    );
+      builder:
+          (_) => Container(
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+            ),
+            child: BlocProvider.value(
+              value: cubit,
+              child: ProductQuickReview(product: widget.product),
+            ),
+          ),
+    ).whenComplete(() {
+      context.read<ProductCubit>().clearSelections();
+    });
   }
 
   BoxDecoration _cardDecoration() {
