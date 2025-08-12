@@ -110,7 +110,6 @@ class CartCubit extends Cubit<CartState> {
     String color,
   ) async {
     try {
-      // Get item name before removing for the success message
       final currentItems = await getCartItems();
       final itemToRemove = currentItems.firstWhere(
         (item) =>

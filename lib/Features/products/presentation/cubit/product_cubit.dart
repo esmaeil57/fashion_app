@@ -20,11 +20,13 @@ class ProductCubit extends Cubit<ProductState> {
 
   // New method to initialize for single product (for product details page)
   void initializeForSingleProduct() {
-    emit(ProductLoaded(
-      products: [],
-      isGridView: _isGridView,
-      searchQuery: _searchQuery,
-    ));
+    emit(
+      ProductLoaded(
+        products: [],
+        isGridView: _isGridView,
+        searchQuery: _searchQuery,
+      ),
+    );
   }
 
   Future<void> loadProducts(String categoryId) async {
