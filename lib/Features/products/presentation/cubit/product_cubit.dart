@@ -12,13 +12,15 @@ class ProductCubit extends Cubit<ProductState> {
   bool _isGridView = true;
   String _searchQuery = '';
 
+  // Store the unmodified product list for "recommended" sorting
+  List<Product> _originalProducts = [];
+
   ProductCubit({
     required this.getAllProducts,
     required this.getProducts,
     required this.searchProducts,
   }) : super(ProductInitial());
 
-  // New method to initialize for single product (for product details page)
   void initializeForSingleProduct() {
     emit(
       ProductLoaded(
@@ -35,6 +37,7 @@ class ProductCubit extends Cubit<ProductState> {
 
     try {
       final products = await getProducts(categoryId);
+      _originalProducts = List<Product>.from(products); // Save original order
       emit(
         ProductLoaded(
           products: products,
@@ -53,6 +56,7 @@ class ProductCubit extends Cubit<ProductState> {
 
     try {
       final products = await getAllProducts();
+      _originalProducts = List<Product>.from(products); // Save original order
       emit(
         ProductLoaded(
           products: products,
@@ -69,13 +73,12 @@ class ProductCubit extends Cubit<ProductState> {
     if (state is ProductLoaded) {
       final currentState = state as ProductLoaded;
 
-      final updatedProducts =
-          currentState.products.map((product) {
-            if (product.id == productId) {
-              return product.copyWith(isFavorite: !product.isFavorite);
-            }
-            return product;
-          }).toList();
+      final updatedProducts = currentState.products.map((product) {
+        if (product.id == productId) {
+          return product.copyWith(isFavorite: !product.isFavorite);
+        }
+        return product;
+      }).toList();
 
       emit(
         ProductLoaded(
@@ -93,13 +96,12 @@ class ProductCubit extends Cubit<ProductState> {
     if (state is ProductLoaded) {
       final currentState = state as ProductLoaded;
 
-      final updatedProducts =
-          currentState.products.map((product) {
-            if (product.id == productId) {
-              return product.copyWith(isAddedToCart: !product.isAddedToCart);
-            }
-            return product;
-          }).toList();
+      final updatedProducts = currentState.products.map((product) {
+        if (product.id == productId) {
+          return product.copyWith(isAddedToCart: !product.isAddedToCart);
+        }
+        return product;
+      }).toList();
 
       emit(
         ProductLoaded(
@@ -114,7 +116,6 @@ class ProductCubit extends Cubit<ProductState> {
   }
 
   void selectSize(String size) {
-    // Handle both ProductInitial and ProductLoaded states
     if (state is ProductLoaded) {
       final currentState = state as ProductLoaded;
       emit(
@@ -127,7 +128,6 @@ class ProductCubit extends Cubit<ProductState> {
         ),
       );
     } else {
-      // If state is not ProductLoaded, initialize it first
       emit(
         ProductLoaded(
           products: [],
@@ -141,7 +141,6 @@ class ProductCubit extends Cubit<ProductState> {
   }
 
   void selectColor(String color, int colorIndex) {
-    // Handle both ProductInitial and ProductLoaded states
     if (state is ProductLoaded) {
       final currentState = state as ProductLoaded;
       emit(
@@ -154,7 +153,6 @@ class ProductCubit extends Cubit<ProductState> {
         ),
       );
     } else {
-      // If state is not ProductLoaded, initialize it first
       emit(
         ProductLoaded(
           products: [],
@@ -167,7 +165,6 @@ class ProductCubit extends Cubit<ProductState> {
     }
   }
 
-  // Method to clear selections
   void clearSelections() {
     if (state is ProductLoaded) {
       final currentState = state as ProductLoaded;
@@ -203,7 +200,6 @@ class ProductCubit extends Cubit<ProductState> {
     _searchQuery = query;
 
     if (query.isEmpty) {
-      // If query is empty, reload the original products
       await loadProducts(_currentCategoryId);
       return;
     }
@@ -214,23 +210,14 @@ class ProductCubit extends Cubit<ProductState> {
       List<Product> products;
 
       if (_currentCategoryId == 'all') {
-        // Search in all products using the API search endpoint
         products = await searchProducts(query);
       } else {
-        // Get products by category first, then filter by search query
         final allProducts = await getProducts(_currentCategoryId);
-        products =
-            allProducts
-                .where(
-                  (product) =>
-                      product.name.toLowerCase().contains(
-                        query.toLowerCase(),
-                      ) ||
-                      product.description.toLowerCase().contains(
-                        query.toLowerCase(),
-                      ),
-                )
-                .toList();
+        products = allProducts.where(
+          (product) =>
+              product.name.toLowerCase().contains(query.toLowerCase()) ||
+              product.description.toLowerCase().contains(query.toLowerCase()),
+        ).toList();
       }
 
       emit(
@@ -254,7 +241,6 @@ class ProductCubit extends Cubit<ProductState> {
     }
   }
 
-  // Method to filter products by category (used when categories are mixed)
   void filterByCategory(String categoryId) {
     if (state is ProductLoaded) {
       final currentState = state as ProductLoaded;
@@ -264,10 +250,9 @@ class ProductCubit extends Cubit<ProductState> {
         return;
       }
 
-      final filteredProducts =
-          currentState.products
-              .where((product) => product.categoryId == categoryId)
-              .toList();
+      final filteredProducts = currentState.products
+          .where((product) => product.categoryId == categoryId)
+          .toList();
 
       emit(
         ProductLoaded(
@@ -281,24 +266,23 @@ class ProductCubit extends Cubit<ProductState> {
     }
   }
 
-  // Method to sort products
   void sortProducts(String sortBy) {
     if (state is ProductLoaded) {
       final currentState = state as ProductLoaded;
-      final sortedProducts = List<Product>.from(currentState.products);
+      List<Product> sortedProducts;
 
       switch (sortBy.toLowerCase()) {
         case 'price_low_to_high':
-          sortedProducts.sort(
-            (a, b) => a.effectivePrice.compareTo(b.effectivePrice),
-          );
+          sortedProducts = List<Product>.from(currentState.products)
+            ..sort((a, b) => a.effectivePrice.compareTo(b.effectivePrice));
           break;
         case 'price_high_to_low':
-          sortedProducts.sort(
-            (a, b) => b.effectivePrice.compareTo(a.effectivePrice),
-          );
+          sortedProducts = List<Product>.from(currentState.products)
+            ..sort((a, b) => b.effectivePrice.compareTo(a.effectivePrice));
           break;
+        case 'recommended':
         default:
+          sortedProducts = List<Product>.from(_originalProducts);
           break;
       }
 
