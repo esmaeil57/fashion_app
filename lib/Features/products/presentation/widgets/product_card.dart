@@ -32,7 +32,7 @@ class _ProductCardState extends State<ProductCard> {
   final PageController _pageController = PageController();
   bool _isFavorite = false;
   bool _isLoadingFavorite = true;
-  FavoritesCubit  _favoritesCubit = injector<FavoritesCubit>();
+  final FavoritesCubit  _favoritesCubit = injector<FavoritesCubit>();
   
   @override
   void initState() {

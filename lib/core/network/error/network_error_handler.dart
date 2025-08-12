@@ -10,13 +10,13 @@ dynamic handleResponseAsJson(Response<dynamic> response) {
   return responseJson;
 }
 
-NetworkException handleDioError(DioError error) {
+NetworkException handleDioError(DioException error) {
   switch (error.type) {
-    case DioErrorType.connectionTimeout:
-    case DioErrorType.sendTimeout:
-    case DioErrorType.receiveTimeout:
+    case DioExceptionType.connectionTimeout:
+    case DioExceptionType.sendTimeout:
+    case DioExceptionType.receiveTimeout:
       return FetchDataException(dioError: error, response: error.response);
-    case DioErrorType.badResponse:
+    case DioExceptionType.badResponse:
       if (error.response?.data != null) {
         try {
           final responseData = error.response?.data;
@@ -40,7 +40,7 @@ NetworkException handleDioError(DioError error) {
       }
       return getStatusCodeError(
           error.response?.statusCode, error.response, error);
-    case DioErrorType.unknown:
+    case DioExceptionType.unknown:
       return NoInternetConnectionException(
           dioError: error, response: error.response);
     default:
@@ -51,7 +51,7 @@ NetworkException handleDioError(DioError error) {
 NetworkException getStatusCodeError(
   int? statusCode,
   Response<dynamic>? response,
-  DioError? error,
+  DioException? error,
 ) {
   if (response?.data != null) {
     try {

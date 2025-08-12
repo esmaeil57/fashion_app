@@ -34,14 +34,14 @@ class CategoryRepositoryImpl implements CategoryRepository {
         if (page == 1) {
           return _getStaticCategories(page: page, perPage: perPage);
         } else {
-          throw e;
+          rethrow;
         }
       } catch (e) {
         print(' General exception on page $page: $e');
         if (page == 1) {
           return _getStaticCategories(page: page, perPage: perPage);
         } else {
-          throw e;
+          rethrow;
         }
       }
     } else {

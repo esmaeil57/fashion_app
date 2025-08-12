@@ -10,7 +10,7 @@ class AppInterceptor extends Interceptor {
     RequestInterceptorHandler handler,
   ) async {
     var authToken =
-        base64.encode(utf8.encode(Config.key + ":" + Config.secret));
+        base64.encode(utf8.encode("${Config.key}:${Config.secret}"));
     print(authToken);
     options.headers[DioStrings.authorization] = "Basic $authToken";
     options.headers[DioStrings.contentType] = "application/json";

@@ -14,7 +14,7 @@ import '../../dependency_injection/injector.dart' as di;
 class DioConsumer implements ApiConsumer {
   final Dio client;
   DioConsumer({required this.client}) {
-    (client.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate =
+    (client.httpClientAdapter as IOHttpClientAdapter).onHttpClientCreate =
         (HttpClient client) {
       client.badCertificateCallback =
           (X509Certificate cert, String host, int port) => true;
@@ -49,7 +49,7 @@ class DioConsumer implements ApiConsumer {
       } else {
         return left(getStatusCodeError(response.statusCode, response, null));
       }
-    } on DioError catch (error) {
+    } on DioException catch (error) {
       return left(handleDioError(error));
     }
   }
@@ -76,7 +76,7 @@ class DioConsumer implements ApiConsumer {
       } else {
         return left(getStatusCodeError(response.statusCode, response, null));
       }
-    } on DioError catch (error) {
+    } on DioException catch (error) {
       return left(handleDioError(error));
     }
   }
@@ -101,7 +101,7 @@ class DioConsumer implements ApiConsumer {
       } else {
         return left(getStatusCodeError(response.statusCode, response, null));
       }
-    } on DioError catch (error) {
+    } on DioException catch (error) {
       return left(handleDioError(error));
     }
   }
@@ -125,7 +125,7 @@ class DioConsumer implements ApiConsumer {
       } else {
         return left(getStatusCodeError(response.statusCode, response, null));
       }
-    } on DioError catch (error) {
+    } on DioException catch (error) {
       return left(handleDioError(error));
     }
   }
@@ -141,7 +141,7 @@ class DioConsumer implements ApiConsumer {
       } else {
         return left(getStatusCodeError(response.statusCode, response, null));
       }
-    } on DioError catch (error) {
+    } on DioException catch (error) {
       return left(handleDioError(error));
     }
   }

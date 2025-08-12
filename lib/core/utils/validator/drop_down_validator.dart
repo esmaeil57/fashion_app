@@ -7,9 +7,9 @@ class DropDownPassed extends DropDownValidation {}
 class DropDownEmpty extends DropDownValidation {}
 
 DropDownValidation validateDropDownState(String? value) {
-  debugPrint("valuesssss is...... ${value}");
+  debugPrint("valuesssss is...... $value");
   if (value == null || value.isEmpty) {
-    debugPrint("valuesssss is inside if ...... ${value}");
+    debugPrint("valuesssss is inside if ...... $value");
 
     return DropDownEmpty();
   }
