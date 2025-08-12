@@ -30,14 +30,13 @@ class ProductCard extends StatefulWidget {
 class _ProductCardState extends State<ProductCard> {
   int _currentImageIndex = 0;
   final PageController _pageController = PageController();
-  late FavoritesCubit _favoritesCubit;
   bool _isFavorite = false;
   bool _isLoadingFavorite = true;
-
+  FavoritesCubit  _favoritesCubit = injector<FavoritesCubit>();
+  
   @override
   void initState() {
     super.initState();
-    _favoritesCubit = injector<FavoritesCubit>();
     _checkFavoriteStatus();
   }
 
@@ -248,7 +247,7 @@ class _ProductCardState extends State<ProductCard> {
   Widget _buildListCard(BuildContext context, bool isFavorite, bool isInCart) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
-      height: 390,
+      height: 450,
       decoration: _cardDecoration(),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
