@@ -6,11 +6,8 @@ import '../../domain/usecase/get_products.dart';
 class ProductCubit extends Cubit<ProductState> {
   final GetProducts getProducts;
   final GetAllProducts getAllProducts;
-  final SearchProducts searchProducts;
-
-  String _currentCategoryId = '';
   bool _isGridView = true;
-  String _searchQuery = '';
+  final String _searchQuery = '';
 
   // Store the unmodified product list for "recommended" sorting
   List<Product> _originalProducts = [];
@@ -18,7 +15,6 @@ class ProductCubit extends Cubit<ProductState> {
   ProductCubit({
     required this.getAllProducts,
     required this.getProducts,
-    required this.searchProducts,
   }) : super(ProductInitial());
 
   void initializeForSingleProduct() {
@@ -32,7 +28,6 @@ class ProductCubit extends Cubit<ProductState> {
   }
 
   Future<void> loadProducts(String categoryId) async {
-    _currentCategoryId = categoryId;
     emit(ProductLoading());
 
     try {
@@ -51,7 +46,6 @@ class ProductCubit extends Cubit<ProductState> {
   }
 
   Future<void> loadAllProducts() async {
-    _currentCategoryId = 'all';
     emit(ProductLoading());
 
     try {
@@ -193,51 +187,6 @@ class ProductCubit extends Cubit<ProductState> {
           selectedColor: currentState.selectedColor,
         ),
       );
-    }
-  }
-
-  Future<void> searchProductsInCategory(String query) async {
-    _searchQuery = query;
-
-    if (query.isEmpty) {
-      await loadProducts(_currentCategoryId);
-      return;
-    }
-
-    emit(ProductLoading());
-
-    try {
-      List<Product> products;
-
-      if (_currentCategoryId == 'all') {
-        products = await searchProducts(query);
-      } else {
-        final allProducts = await getProducts(_currentCategoryId);
-        products = allProducts.where(
-          (product) =>
-              product.name.toLowerCase().contains(query.toLowerCase()) ||
-              product.description.toLowerCase().contains(query.toLowerCase()),
-        ).toList();
-      }
-
-      emit(
-        ProductLoaded(
-          products: products,
-          isGridView: _isGridView,
-          searchQuery: _searchQuery,
-        ),
-      );
-    } catch (e) {
-      emit(ProductError(e.toString()));
-    }
-  }
-
-  void clearSearch() {
-    _searchQuery = '';
-    if (_currentCategoryId == 'all') {
-      loadAllProducts();
-    } else {
-      loadProducts(_currentCategoryId);
     }
   }
 

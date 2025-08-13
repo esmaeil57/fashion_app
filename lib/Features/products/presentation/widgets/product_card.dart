@@ -1,4 +1,4 @@
-import 'package:fashion/core/common_widgets/shimmer_widget.dart';
+import 'package:fashion/core/shared_widgets/shimmer_widget.dart';
 import 'package:fashion/features/favorites/presentation/cubit/favorite_cubit.dart';
 import 'package:fashion/features/favorites/presentation/cubit/favorite_state.dart';
 import 'package:fashion/features/products/presentation/pages/product_details_page.dart';

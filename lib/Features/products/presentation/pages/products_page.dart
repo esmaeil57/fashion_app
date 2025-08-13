@@ -30,76 +30,30 @@ class _ProductsPageState extends State<ProductsPage> {
   }
 
   @override
-Widget build(BuildContext context) {
-  return BlocProvider(
-    create: (_) => injector<ProductCubit>()..loadProducts(widget.categoryId),
-    child: Scaffold(
-      backgroundColor: Colors.grey[50],
-      appBar: ProductsAppBar(
-        searchController: _searchController,
-        onSearch: () => _showSearchDialog(context),
-        categoryName: widget.categoryName,
-      ),
-      body: SafeArea(
-        child: ConstrainedBox(  
-          constraints: const BoxConstraints.expand(),
-          child: Column(
-            mainAxisSize: MainAxisSize.max,
-            children: [
-              Divider(color: Colors.grey[300], thickness: 1),
-              const SortAndViewToggle(),
-              Divider(color: Colors.grey[300], thickness: 1),
-              Expanded(
-                child: ProductListView(
-                  categoryId: widget.categoryId,
-                ),
-              ),
-            ],
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (_) => injector<ProductCubit>()..loadProducts(widget.categoryId),
+      child: Scaffold(
+        backgroundColor: Colors.grey[50],
+        appBar: ProductsAppBar(
+          searchController: _searchController,
+          onSearch: (){},
+          categoryName: widget.categoryName,
+        ),
+        body: SafeArea(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints.expand(),
+            child: Column(
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                Divider(color: Colors.grey[300], thickness: 1),
+                const SortAndViewToggle(),
+                Divider(color: Colors.grey[300], thickness: 1),
+                Expanded(child: ProductListView(categoryId: widget.categoryId)),
+              ],
+            ),
           ),
         ),
-      ),
-    ),
-  );
-}
-  void _showSearchDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Search Products'),
-        content: TextField(
-          controller: _searchController,
-          decoration: const InputDecoration(
-            hintText: 'Enter product name...',
-            prefixIcon: Icon(Icons.search),
-            border: OutlineInputBorder(),
-          ),
-          onSubmitted: (value) {
-            if (value.trim().isNotEmpty) {
-              context.read<ProductCubit>().searchProductsInCategory(value.trim());
-            }
-            Navigator.pop(ctx);
-          },
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              _searchController.clear();
-              context.read<ProductCubit>().clearSearch();
-              Navigator.pop(ctx);
-            },
-            child: const Text('Clear'),
-          ),
-          TextButton(
-            onPressed: () {
-              final query = _searchController.text.trim();
-              if (query.isNotEmpty) {
-                context.read<ProductCubit>().searchProductsInCategory(query);
-              }
-              Navigator.pop(ctx);
-            },
-            child: const Text('Search'),
-          ),
-        ],
       ),
     );
   }

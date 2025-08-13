@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../domain/entities/product_category.dart';
 import '../../../products/presentation/pages/products_page.dart';
-import '../../../../core/common_widgets/smart_image.dart';
+import '../../../../core/shared_widgets/smart_image.dart';
 
 class CategoryGrid extends StatelessWidget {
   final List<ProductCategory> categories;

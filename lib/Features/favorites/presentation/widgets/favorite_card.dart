@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:fashion/core/common_widgets/smart_image.dart';
+import 'package:fashion/core/shared_widgets/smart_image.dart';
 import 'package:fashion/core/utils/styles/color/app_colors.dart';
 import '../../domain/entities/favorite.dart';
 

@@ -1,4 +1,4 @@
-import 'package:fashion/core/common_widgets/shimmer_widget.dart';
+import 'package:fashion/core/shared_widgets/shimmer_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../cubit/product_cubit.dart';

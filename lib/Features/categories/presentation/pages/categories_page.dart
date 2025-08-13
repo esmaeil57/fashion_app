@@ -1,10 +1,11 @@
 import 'package:fashion/features/categories/presentation/cubit/category_cubit.dart';
 import 'package:fashion/features/categories/presentation/cubit/category_state.dart';
 import 'package:fashion/features/categories/presentation/widgets/category_card.dart';
-import 'package:fashion/core/common_widgets/search_bar.dart';
-import 'package:fashion/core/common_widgets/shimmer_widget.dart';
+import 'package:fashion/core/shared_widgets/shimmer_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../../../core/shared_widgets/enhanced_search_bar.dart';
 
 class CategoriesPage extends StatefulWidget {
   const CategoriesPage({super.key});
@@ -47,22 +48,26 @@ class _CategoriesPageState extends State<CategoriesPage> {
     return Scaffold(
       body: Column(
         children: [
-          const CustomSearchBar(),
+          // Search bar for categories page
+          const EnhancedSearchBar(
+            hintText: 'Search products...',
+            margin: EdgeInsets.fromLTRB(20, 40, 20, 16),
+          ),
           Expanded(
             child: BlocBuilder<CategoryCubit, CategoryState>(
               builder: (context, state) {
                 if (state is CategoryLoading) {
                   return const CategoryShimmerLoading();
                 }
-    
+
                 if (state is CategoryError) {
                   return _buildErrorWidget(context, state.message);
                 }
-    
+
                 if (state is CategoryLoaded) {
                   return _buildCategoryList(context, state);
                 }
-    
+
                 return const SizedBox();
               },
             ),

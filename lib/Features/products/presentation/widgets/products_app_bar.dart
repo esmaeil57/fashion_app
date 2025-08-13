@@ -3,6 +3,8 @@ import 'package:fashion/features/products/presentation/cubit/product_state.dart'
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../search/presentation/widgets/search_icon_button.dart';
+
 class ProductsAppBar extends StatelessWidget implements PreferredSizeWidget {
   final TextEditingController searchController;
   final VoidCallback onSearch;
@@ -46,12 +48,13 @@ class ProductsAppBar extends StatelessWidget implements PreferredSizeWidget {
           );
         },
       ),
-      actions: [
-        IconButton(
-          icon: const Icon(Icons.search, color: Colors.black),
-          onPressed: onSearch,
-        )
-      ],
+        actions: [
+          // Search icon button
+          const SearchIconButton(
+            iconColor: Colors.black,
+          ),
+          const SizedBox(width: 8),
+        ],
     );
   }
 

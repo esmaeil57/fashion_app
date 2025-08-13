@@ -29,7 +29,6 @@ Future<void> productInjector() async {
     () => ProductCubit(
       getProducts: injector(),
       getAllProducts: injector(),
-      searchProducts: injector(),
     ),
   );
 }

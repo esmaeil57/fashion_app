@@ -1,6 +1,6 @@
+import 'package:fashion/core/shared_widgets/enhanced_search_bar.dart';
 import 'package:fashion/features/homepage/presentation/widgets/carousel_slider_plus.dart';
-import 'package:fashion/core/common_widgets/search_bar.dart';
-import 'package:fashion/core/common_widgets/shimmer_widget.dart';
+import 'package:fashion/core/shared_widgets/shimmer_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../cubit/home_cubit.dart';
@@ -23,7 +23,10 @@ class HomePage extends StatelessWidget {
             child: Column(
               children: [
                 // Search Bar
-                CustomSearchBar(),
+                EnhancedSearchBar(
+                  hintText: 'Serach For Products',
+                  margin: EdgeInsets.only(top: 40, left: 16, right: 16),
+                ),
                 SizedBox(height: 10),
                 //Carousel
                 VerticalSlider(),

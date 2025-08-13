@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fashion/core/utils/styles/color/app_colors.dart';
 import 'package:fashion/core/utils/styles/fonts/app_styles.dart';
-import 'package:fashion/core/common_widgets/smart_image.dart';
+import 'package:fashion/core/shared_widgets/smart_image.dart';
 import '../../domain/entities/cart_item.dart';
 
 class CartItemCard extends StatelessWidget {
