@@ -4,6 +4,7 @@ import 'package:fashion/features/categories/presentation/cubit/category_cubit.da
 import 'package:fashion/features/mybasket/presentation/pages/cart_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../cubit/navigation_cubit.dart';
 import '../cubit/navigation_state.dart';
 import '../../../categories/presentation/pages/categories_page.dart';
@@ -41,29 +42,29 @@ class MainPage extends StatelessWidget {
             unselectedItemColor: Colors.grey,
             items: [
               BottomNavigationBarItem(
-                icon: Icon(Icons.home_outlined),
-                activeIcon: Icon(Icons.home),
-                label: 'Home',
+                icon: const Icon(Icons.home_outlined),
+                activeIcon: const Icon(Icons.home),
+                label: 'home'.tr(),
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.category_outlined),
-                activeIcon: Icon(Icons.category),
-                label: 'Categories',
+                icon: const Icon(Icons.category_outlined),
+                activeIcon: const Icon(Icons.category),
+                label: 'categories'.tr(),
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.shopping_cart_outlined),
-                activeIcon: Icon(Icons.shopping_cart),
-                label: 'My Basket',
+                icon: const Icon(Icons.shopping_cart_outlined),
+                activeIcon: const Icon(Icons.shopping_cart),
+                label: 'my_basket'.tr(),
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.favorite_outline),
-                activeIcon: Icon(Icons.favorite),
-                label: 'Favourites',
+                icon: const Icon(Icons.favorite_outline),
+                activeIcon: const Icon(Icons.favorite),
+                label: 'favourites'.tr(),
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.person_outline),
-                activeIcon: Icon(Icons.person),
-                label: 'Profile',
+                icon: const Icon(Icons.person_outline),
+                activeIcon: const Icon(Icons.person),
+                label: 'profile'.tr(),
               ),
             ],
           ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../cubit/profile_cubit.dart';
 import '../cubit/profile_state.dart';
 import '../widgets/logo_widget.dart';
@@ -31,12 +32,12 @@ class LoginForm extends StatelessWidget {
           const CustomTabBar(isLogin: true),
           const SizedBox(height: 30),
           CustomTextField(
-            hint: 'Your E-Mail Address',
+            hint: 'your_email_address'.tr(),
             controller: emailController,
           ),
           const SizedBox(height: 16),
           CustomTextField(
-            hint: 'Your Password',
+            hint: 'your_password'.tr(),
             controller: passwordController,
             obscure: !state.isPasswordVisible,
             suffixIcon: IconButton(
@@ -49,17 +50,17 @@ class LoginForm extends StatelessWidget {
           ),
           const SizedBox(height: 30),
           RedButton(
-            text: 'LOGIN',
+            text: 'login'.tr().toUpperCase(),
             onPressed: () => context.read<ProfileCubit>().login(),
           ),
           const SizedBox(height: 20),
           Text(
-            'Or if you don\'t have an account',
+            'or_if_you_dont_have_account'.tr(),
             style: TextStyle(color: Colors.grey[600]),
           ),
           const SizedBox(height: 16),
           WhiteButton(
-            text: 'CREATE AN ACCOUNT',
+            text: 'create_an_account'.tr().toUpperCase(),
             onPressed: () => context.read<ProfileCubit>().switchToSignUp(),
           ),
           const SizedBox(height: 40),

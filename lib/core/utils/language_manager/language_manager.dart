@@ -35,11 +35,6 @@ class AppLocalization {
     return key.tr();
   }
 
-  /// This method will be called from every widget which needs a localized text
-  static String translate_(String key) {
-    return key.tr();
-  }
-
   /// This method will be called from every widget which needs a localized number
   /// to keep the number the same format
   static String translateNumber(
@@ -49,7 +44,7 @@ class AppLocalization {
 
   /// Returns true in case the language is Right to Left
   static bool isRTL(BuildContext context) {
-    // return context.locale.languageCode == 'ar';
+    //return context.locale.languageCode == 'ar';
     return Directionality.of(context).toString().toLowerCase().contains('rtl');
   }
 

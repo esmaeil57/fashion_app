@@ -1,6 +1,7 @@
+import 'package:easy_localization/easy_localization.dart';
+import 'package:fashion/features/profile/presentation/cubit/profile_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../cubit/profile_cubit.dart';
 
 class CustomTabBar extends StatelessWidget {
   final bool isLogin;
@@ -28,7 +29,7 @@ class CustomTabBar extends StatelessWidget {
                 ),
               ),
               child: Text(
-                'LOGIN',
+                'login'.tr().toUpperCase(),
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: isLogin ? const Color(0xFFD32F2F) : Colors.grey,
@@ -52,7 +53,7 @@ class CustomTabBar extends StatelessWidget {
                 ),
               ),
               child: Text(
-                'SIGN UP',
+                'sign_up'.tr().toUpperCase(),
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: !isLogin ? const Color(0xFFD32F2F) : Colors.grey,

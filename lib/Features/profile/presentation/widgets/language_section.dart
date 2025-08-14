@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../cubit/profile_state.dart';
 
 class LanguageSection extends StatelessWidget {
@@ -14,9 +15,9 @@ class LanguageSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Language of communication',
-          style: TextStyle(
+        Text(
+          'language_communication'.tr(),
+          style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
           ),
@@ -33,7 +34,7 @@ class LanguageSection extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                state.user.language,
+                _getDisplayLanguage(context, state.user.language),
                 style: const TextStyle(fontSize: 16),
               ),
               const Icon(Icons.keyboard_arrow_down, color: Colors.grey),
@@ -42,7 +43,7 @@ class LanguageSection extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         Text(
-          'Your e-mails will be sent to you in the language you chose.',
+          'language_email_note'.tr(),
           style: TextStyle(
             color: Colors.grey[600],
             fontSize: 12,
@@ -50,5 +51,15 @@ class LanguageSection extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  String _getDisplayLanguage(BuildContext context, String language) {
+    // Return the language in the format that matches current locale
+    if (language == 'English') {
+      return context.locale.languageCode == 'ar' ? 'الإنجليزية' : 'English';
+    } else if (language == 'Arabic') {
+      return context.locale.languageCode == 'ar' ? 'العربية' : 'Arabic';
+    }
+    return language;
   }
 }

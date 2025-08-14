@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../cubit/profile_cubit.dart';
 import '../cubit/profile_state.dart';
 
@@ -27,21 +28,21 @@ class TermsCheckbox extends StatelessWidget {
         ),
         Expanded(
           child: RichText(
-            text: const TextSpan(
-              style: TextStyle(color: Colors.black, fontSize: 14),
+            text: TextSpan(
+              style: const TextStyle(color: Colors.black, fontSize: 14),
               children: [
-                TextSpan(text: 'I have read and accepted '),
+                TextSpan(text: 'terms_acceptance'.tr()),
                 TextSpan(
-                  text: 'Privacy Policy',
-                  style: TextStyle(
+                  text: 'privacy_policy'.tr(),
+                  style: const TextStyle(
                     color: Color(0xFFD32F2F),
                     decoration: TextDecoration.underline,
                   ),
                 ),
-                TextSpan(text: ' and '),
+                TextSpan(text: 'and'.tr()),
                 TextSpan(
-                  text: 'Terms and Conditions',
-                  style: TextStyle(
+                  text: 'terms_conditions'.tr(),
+                  style: const TextStyle(
                     color: Color(0xFFD32F2F),
                     decoration: TextDecoration.underline,
                   ),

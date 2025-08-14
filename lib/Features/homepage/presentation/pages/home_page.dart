@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:fashion/core/shared_widgets/enhanced_search_bar.dart';
 import 'package:fashion/features/homepage/presentation/widgets/carousel_slider_plus.dart';
 import 'package:fashion/core/shared_widgets/shimmer_widget.dart';
@@ -24,7 +25,7 @@ class HomePage extends StatelessWidget {
               children: [
                 // Search Bar
                 EnhancedSearchBar(
-                  hintText: 'Serach For Products',
+                  hintText: 'search_for_products'.tr(),
                   margin: EdgeInsets.only(top: 40, left: 16, right: 16),
                 ),
                 SizedBox(height: 10),

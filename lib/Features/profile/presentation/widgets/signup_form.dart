@@ -1,15 +1,16 @@
+import 'package:easy_localization/easy_localization.dart';
+import 'package:fashion/features/profile/presentation/cubit/profile_cubit.dart';
+import 'package:fashion/features/profile/presentation/cubit/profile_state.dart';
+import 'package:fashion/features/profile/presentation/widgets/custom_buttons.dart';
+import 'package:fashion/features/profile/presentation/widgets/custom_text_field.dart';
+import 'package:fashion/features/profile/presentation/widgets/language_section.dart';
+import 'package:fashion/features/profile/presentation/widgets/logo_widget.dart';
+import 'package:fashion/features/profile/presentation/widgets/menu_section.dart';
+import 'package:fashion/features/profile/presentation/widgets/permissions_section.dart';
+import 'package:fashion/features/profile/presentation/widgets/tab_bar_widget.dart';
+import 'package:fashion/features/profile/presentation/widgets/terms_checkbox.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../cubit/profile_cubit.dart';
-import '../cubit/profile_state.dart';
-import '../widgets/logo_widget.dart';
-import '../widgets/tab_bar_widget.dart';
-import '../widgets/custom_text_field.dart';
-import '../widgets/custom_buttons.dart';
-import '../widgets/menu_section.dart';
-import '../widgets/language_section.dart';
-import '../widgets/permissions_section.dart';
-import '../widgets/terms_checkbox.dart';
 
 class SignUpForm extends StatelessWidget {
   final TextEditingController emailController;
@@ -40,22 +41,22 @@ class SignUpForm extends StatelessWidget {
           const CustomTabBar(isLogin: false),
           const SizedBox(height: 30),
           CustomTextField(
-            hint: 'First Name',
+            hint: 'first_name'.tr(),
             controller: firstNameController,
           ),
           const SizedBox(height: 16),
           CustomTextField(
-            hint: 'Last Name',
+            hint: 'last_name'.tr(),
             controller: lastNameController,
           ),
           const SizedBox(height: 16),
           CustomTextField(
-            hint: 'Your E-Mail Address',
+            hint: 'your_email_address'.tr(),
             controller: emailController,
           ),
           const SizedBox(height: 16),
           CustomTextField(
-            hint: 'Your Password',
+            hint: 'your_password'.tr(),
             controller: passwordController,
             obscure: !state.isPasswordVisible,
             suffixIcon: IconButton(
@@ -68,7 +69,7 @@ class SignUpForm extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           CustomTextField(
-            hint: '+20 _ _ _ _ _ _',
+            hint: 'phone_placeholder'.tr(),
             controller: phoneController,
           ),
           const SizedBox(height: 20),
@@ -79,17 +80,17 @@ class SignUpForm extends StatelessWidget {
           TermsCheckbox(state: state),
           const SizedBox(height: 30),
           RedButton(
-            text: 'CREATE AN ACCOUNT',
+            text: 'create_an_account'.tr().toUpperCase(),
             onPressed: () => context.read<ProfileCubit>().register(),
           ),
           const SizedBox(height: 20),
           Text(
-            'or if you have an account',
+            'or_if_you_have_account'.tr(),
             style: TextStyle(color: Colors.grey[800]),
           ),
           const SizedBox(height: 16),
           WhiteButton(
-            text: 'LOGIN',
+            text: 'login'.tr().toUpperCase(),
             onPressed: () => context.read<ProfileCubit>().switchToLogin(),
           ),
           const SizedBox(height: 40),

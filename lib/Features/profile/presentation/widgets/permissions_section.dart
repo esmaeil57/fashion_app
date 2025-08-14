@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../cubit/profile_cubit.dart';
 import '../cubit/profile_state.dart';
 
@@ -16,9 +17,9 @@ class PermissionsSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Would you like to give us permission to contact you using one or more of the methods below?',
-          style: TextStyle(fontSize: 14),
+        Text(
+          'permission_question'.tr(),
+          style: const TextStyle(fontSize: 14),
         ),
         const SizedBox(height: 16),
         Row(
@@ -35,7 +36,7 @@ class PermissionsSection extends StatelessWidget {
                     },
                     activeColor: const Color(0xFFD32F2F),
                   ),
-                  const Text('E-mail'),
+                  Text('email'.tr()),
                 ],
               ),
             ),
@@ -51,7 +52,7 @@ class PermissionsSection extends StatelessWidget {
                     },
                     activeColor: const Color(0xFFD32F2F),
                   ),
-                  const Text('SMS'),
+                  Text('sms'.tr()),
                 ],
               ),
             ),

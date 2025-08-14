@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:fashion/features/categories/presentation/cubit/category_cubit.dart';
 import 'package:fashion/features/categories/presentation/cubit/category_state.dart';
 import 'package:fashion/features/categories/presentation/widgets/category_card.dart';
@@ -49,8 +50,8 @@ class _CategoriesPageState extends State<CategoriesPage> {
       body: Column(
         children: [
           // Search bar for categories page
-          const EnhancedSearchBar(
-            hintText: 'Search products...',
+           EnhancedSearchBar(
+            hintText: 'search_for_products'.tr(),
             margin: EdgeInsets.fromLTRB(20, 40, 20, 16),
           ),
           Expanded(
