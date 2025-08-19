@@ -8,9 +8,7 @@ class LogoWidget extends StatelessWidget {
     return Container(
       width: 200,
       height: 80,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8),
-      ),
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
       child: Row(
         children: [
           Container(
@@ -24,7 +22,7 @@ class LogoWidget extends StatelessWidget {
             ),
             child: const Center(
               child: Image(
-                image: AssetImage('assets/logo.png'),
+                image: AssetImage('assets/images/logo.png'),
                 width: 80,
                 height: 80,
                 fit: BoxFit.cover,

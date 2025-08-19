@@ -12,10 +12,10 @@ class _VerticalSliderState extends State<VerticalSlider> {
   int _currentIndex = 0;
 
   final List<String> imagePaths = [
-    'assets/image1.jpg',
-    'assets/image2.jpg',
-    'assets/image3.jpg',
-    'assets/image4.jpg',
+    'assets/images/image1.jpg',
+    'assets/images/image2.jpg',
+    'assets/images/image3.jpg',
+    'assets/images/image4.jpg',
   ];
 
   @override

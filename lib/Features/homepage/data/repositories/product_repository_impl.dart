@@ -15,23 +15,20 @@ class ProductRepositoryImpl implements ProductRepository {
   Future<List<ProductCategory>> getCategories() async {
     final result = await apiConsumer.get(EndPoints.categoriesListEndPoint);
 
-    return result.fold(
-      (error) => throw error,
-      (data) {
-        final List<dynamic> categoryList =
-            data is String ? json.decode(data) : data;
+    return result.fold((error) => throw error, (data) {
+      final List<dynamic> categoryList =
+          data is String ? json.decode(data) : data;
 
-        return categoryList
-            .map<ProductCategory>(
-              (item) => ProductCategory(
-                id: item['id'].toString(),
-                name: item['name'] ?? '',
-                iconPath: item['image']?['src'] ?? 'assets/logo.png',
-              ),
-            )
-            .toList();
-      },
-    );
+      return categoryList
+          .map<ProductCategory>(
+            (item) => ProductCategory(
+              id: item['id'].toString(),
+              name: item['name'] ?? '',
+              iconPath: item['image']?['src'] ?? 'assets/images/logo.png',
+            ),
+          )
+          .toList();
+    });
   }
 
   @override
@@ -41,19 +38,16 @@ class ProductRepositoryImpl implements ProductRepository {
       queryParameters: {'category': categoryId},
     );
 
-    return result.fold(
-      (error) => throw error,
-      (data) {
-        final List<dynamic> productList =
-            data is String ? json.decode(data) : data;
+    return result.fold((error) => throw error, (data) {
+      final List<dynamic> productList =
+          data is String ? json.decode(data) : data;
 
-        return productList
-            .map<Product>(
-              (json) => ProductModel.fromJson(json as Map<String, dynamic>),
-            )
-            .toList();
-      },
-    );
+      return productList
+          .map<Product>(
+            (json) => ProductModel.fromJson(json as Map<String, dynamic>),
+          )
+          .toList();
+    });
   }
 
   @override
@@ -63,18 +57,15 @@ class ProductRepositoryImpl implements ProductRepository {
       queryParameters: {'search': query},
     );
 
-    return result.fold(
-      (error) => throw error,
-      (data) {
-        final List<dynamic> productList =
-            data is String ? json.decode(data) : data;
+    return result.fold((error) => throw error, (data) {
+      final List<dynamic> productList =
+          data is String ? json.decode(data) : data;
 
-        return productList
-            .map<Product>(
-              (json) => ProductModel.fromJson(json as Map<String, dynamic>),
-            )
-            .toList();
-      },
-    );
+      return productList
+          .map<Product>(
+            (json) => ProductModel.fromJson(json as Map<String, dynamic>),
+          )
+          .toList();
+    });
   }
 }

@@ -1,3 +1,4 @@
+import 'package:fashion/core/dependency_injection/injector.dart';
 import 'package:fashion/features/maps/data/datasources/location_data_source.dart';
 import 'package:fashion/features/maps/data/repositories/location_repository_impl.dart';
 import 'package:fashion/features/maps/domain/repositories/location_repository.dart';
@@ -8,9 +9,8 @@ import 'package:fashion/features/maps/domain/usecases/get_location_stream.dart';
 import 'package:fashion/features/maps/domain/usecases/get_route.dart';
 import 'package:fashion/features/maps/domain/usecases/request_location_permission.dart';
 import 'package:fashion/features/maps/presentation/cubit/location_cubit.dart';
-import 'package:get_it/get_it.dart';
 
-final GetIt injector = GetIt.instance;
+
 
 Future<void> locationInjector() async {
   // Data Sources

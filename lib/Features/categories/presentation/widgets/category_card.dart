@@ -18,10 +18,11 @@ class CategoryCard extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => ProductsPage(
-                categoryId: category.id,
-                categoryName: category.name,
-              ),
+              builder:
+                  (context) => ProductsPage(
+                    categoryId: category.id,
+                    categoryName: category.name,
+                  ),
             ),
           );
         },
@@ -57,7 +58,7 @@ class CategoryCard extends StatelessWidget {
 
   Widget _buildCategoryImage() {
     // Check if we have a real image URL or just the placeholder
-    if (category.imageUrl == 'assets/logo.png' || 
+    if (category.imageUrl == 'assets/images/logo.png' ||
         category.imageUrl.isEmpty ||
         category.imageUrl == 'null') {
       // Use FigLogo for placeholder/default images
@@ -68,7 +69,7 @@ class CategoryCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(8),
           color: Colors.grey[200],
         ),
-        child: Image.asset('assets/logo.png'),
+        child: Image.asset('assets/images/logo.png'),
       );
     } else {
       // Use SmartImage for network/asset images
@@ -77,7 +78,7 @@ class CategoryCard extends StatelessWidget {
         width: 60,
         height: 60,
         fit: BoxFit.cover,
-        placeholder: 'assets/logo.png', // Fallback to logo
+        placeholder: 'assets/images/logo.png', // Fallback to logo
         borderRadius: BorderRadius.circular(8),
       );
     }

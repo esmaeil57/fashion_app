@@ -1,19 +1,27 @@
 import 'dart:async';
 import 'package:fashion/core/dependency_injection/injector.dart';
+import 'package:fashion/core/utils/location/location_permission_helper.dart';
 import 'package:fashion/features/favorites/data/models/favorite_model.dart';
 import 'package:fashion/features/mainpage/presentation/cubit/navigation_cubit.dart';
 import 'package:fashion/features/mybasket/data/models/cart_item_model.dart';
 import 'package:fashion/core/utils/locale/locale_helper.dart';
 import 'package:fashion/core/observer/sentry_bloc_observer.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fashion/features/mainpage/presentation/widgets/bottom_nav_bar.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Set preferred orientations
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
 
   await EasyLocalization.ensureInitialized();
   await Hive.initFlutter();
@@ -26,8 +34,9 @@ void main() async {
     Hive.registerAdapter(CartItemModelAdapter());
   }
 
-  await initInjection();
+  await LocationPermissionHelper.requestLocationPermission();
   final savedLocale = await LocaleHelper.getSavedLocale();
+  await initInjection();
 
   Bloc.observer = SentryCubitObserver();
 
@@ -38,25 +47,15 @@ void main() async {
       options.tracesSampleRate = 0.01;
       options.debug = true;
     },
-    appRunner: () {
-      runZonedGuarded(
-        () {
-          runApp(
-            EasyLocalization(
-              supportedLocales: const [Locale('en'), Locale('ar')],
-              path: 'assets/translations',
-              fallbackLocale: const Locale('en'),
-              startLocale: savedLocale ?? const Locale('en'),
-              child: const MyApp(),
-            ),
-          );
-        },
-        (error, stackTrace) async {
-          // Send to Sentry or handle gracefully
-          await Sentry.captureException(error, stackTrace: stackTrace);
-        },
-      );
-    },
+    appRunner: () => runApp(
+      EasyLocalization(
+        supportedLocales: const [Locale('en'), Locale('ar')],
+        path: 'assets/translations',
+        fallbackLocale: const Locale('en'),
+        startLocale: savedLocale ?? const Locale('en'),
+        child: const MyApp(),
+      ),
+    ),
   );
 }
 

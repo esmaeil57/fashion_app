@@ -15,7 +15,10 @@ class CategoryGrid extends StatelessWidget {
     }
 
     // Calculate items per row dynamically (at least 1 to avoid division by zero)
-    final int itemsPerRow = (categories.length / 2).ceil().clamp(1, categories.length);
+    final int itemsPerRow = (categories.length / 2).ceil().clamp(
+      1,
+      categories.length,
+    );
 
     // Split categories into chunks (rows)
     final List<List<ProductCategory>> rows = [];
@@ -65,18 +68,11 @@ class CategoryGrid extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.category_outlined,
-              size: 48,
-              color: Colors.grey[400],
-            ),
+            Icon(Icons.category_outlined, size: 48, color: Colors.grey[400]),
             const SizedBox(height: 8),
             Text(
               'لا توجد فئات متاحة',
-              style: TextStyle(
-                color: Colors.grey[600],
-                fontSize: 14,
-              ),
+              style: TextStyle(color: Colors.grey[600], fontSize: 14),
             ),
           ],
         ),
@@ -88,10 +84,11 @@ class CategoryGrid extends StatelessWidget {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ProductsPage(
-          categoryId: category.id,
-          categoryName: category.name,
-        ),
+        builder:
+            (context) => ProductsPage(
+              categoryId: category.id,
+              categoryName: category.name,
+            ),
       ),
     );
   }
@@ -101,11 +98,7 @@ class CategoryItem extends StatelessWidget {
   final ProductCategory category;
   final VoidCallback? onTap;
 
-  const CategoryItem({
-    super.key, 
-    required this.category,
-    this.onTap,
-  });
+  const CategoryItem({super.key, required this.category, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -137,7 +130,7 @@ class CategoryItem extends StatelessWidget {
                   width: 80,
                   height: 80,
                   fit: BoxFit.cover,
-                  placeholder: 'assets/logo.png',
+                  placeholder: 'assets/images/logo.png',
                   borderRadius: BorderRadius.circular(40),
                 ),
               ),
@@ -149,7 +142,7 @@ class CategoryItem extends StatelessWidget {
                 child: Text(
                   category.name,
                   style: const TextStyle(
-                    fontSize: 10, 
+                    fontSize: 10,
                     fontWeight: FontWeight.w500,
                   ),
                   textAlign: TextAlign.center,
