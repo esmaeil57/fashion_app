@@ -5,6 +5,8 @@ import '../../domain/usecases/check_location_permission.dart';
 import '../../domain/usecases/get_current_location.dart';
 import '../../domain/usecases/get_location_stream.dart';
 import '../../domain/usecases/request_location_permission.dart';
+import '../../domain/usecases/get_route.dart';
+import '../../domain/usecases/get_distance.dart';
 import 'location_state.dart';
 
 class LocationCubit extends Cubit<LocationState> {
@@ -12,6 +14,8 @@ class LocationCubit extends Cubit<LocationState> {
   final RequestLocationPermission requestLocationPermission;
   final CheckLocationPermission checkLocationPermission;
   final GetLocationStream getLocationStream;
+  final GetRoute getRoute;
+  final GetDistance getDistance;
 
   StreamSubscription<UserLocation>? _locationSubscription;
   UserLocation? _currentLocation;
@@ -21,6 +25,8 @@ class LocationCubit extends Cubit<LocationState> {
     required this.requestLocationPermission,
     required this.checkLocationPermission,
     required this.getLocationStream,
+    required this.getRoute,
+    required this.getDistance,
   }) : super(const LocationInitial());
 
   UserLocation? get currentLocation => _currentLocation;
@@ -72,12 +78,53 @@ class LocationCubit extends Cubit<LocationState> {
     }
   }
 
+  Future<void> calculateRoute(UserLocation destination) async {
+    if (_currentLocation == null) {
+      emit(const LocationError('Current location not available'));
+      return;
+    }
+
+    try {
+      emit(const RouteLoading());
+
+      // Get route points and distance concurrently
+      final futures = await Future.wait([
+        getRoute(_currentLocation!, destination),
+        getDistance(_currentLocation!, destination),
+      ]);
+
+      final routePoints = futures[0] as List<UserLocation>;
+      final distance = futures[1] as double;
+
+      emit(RouteLoaded(
+        routePoints: routePoints,
+        distance: distance,
+        start: _currentLocation!,
+        end: destination,
+      ));
+    } catch (e) {
+      emit(RouteError('Failed to calculate route: $e'));
+    }
+  }
+
+  void clearRoute() {
+    if (_currentLocation != null) {
+      emit(LocationLoaded(location: _currentLocation!));
+    } else {
+      emit(const LocationInitial());
+    }
+  }
+
   void _startLocationUpdates() {
     _locationSubscription?.cancel();
     _locationSubscription = getLocationStream().listen(
       (location) {
         _currentLocation = location;
-        emit(LocationUpdated(location: location));
+        
+        // Only emit LocationUpdated if we're not showing a route
+        if (state is! RouteLoaded && state is! RouteLoading) {
+          emit(LocationUpdated(location: location));
+        }
       },
       onError: (error) {
         emit(LocationError('Location stream error: $error'));

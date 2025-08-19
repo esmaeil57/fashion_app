@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fashion/core/dependency_injection/injector.dart';
 import 'package:fashion/core/utils/styles/color/app_colors.dart';
 import 'package:fashion/core/utils/styles/fonts/app_styles.dart';
+import '../../../maps/presentation/pages/maps_page.dart';
 import '../cubit/cart_cubit.dart';
 import '../cubit/cart_state.dart';
 import '../widgets/cart_item_card.dart';
@@ -96,53 +97,95 @@ class _CartPageState extends State<CartPage> {
                 return const EmptyCartWidget();
               }
 
-              return Column(
+              return Stack(
                 children: [
-                  // Extra discount banner
-                  _buildDiscountBanner(),
-                  
-                  // Cart items list
-                  Expanded(
-                    child: ListView.builder(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      itemCount: state.items.length,
-                      itemBuilder: (context, index) {
-                        final item = state.items[index];
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: 16),
-                          child: CartItemCard(
-                            item: item,
-                            onQuantityChanged: (newQuantity) {
-                              context.read<CartCubit>().updateItemQuantity(item, newQuantity);
-                            },
-                            onRemove: () {
-                              context.read<CartCubit>().removeItemFromCart(
-                                item.productId,
-                                item.selectedSize,
-                                item.selectedColor,
-                              );
-                            },
-                          ),
-                        );
-                      },
-                    ),
+                  Column(
+                    children: [
+                      // Extra discount banner
+                      _buildDiscountBanner(),
+                      
+                      // Cart items list
+                      Expanded(
+                        child: ListView.builder(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          itemCount: state.items.length,
+                          itemBuilder: (context, index) {
+                            final item = state.items[index];
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 16),
+                              child: CartItemCard(
+                                item: item,
+                                onQuantityChanged: (newQuantity) {
+                                  context.read<CartCubit>().updateItemQuantity(item, newQuantity);
+                                },
+                                onRemove: () {
+                                  context.read<CartCubit>().removeItemFromCart(
+                                    item.productId,
+                                    item.selectedSize,
+                                    item.selectedColor,
+                                  );
+                                },
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+
+                      // Campaign code section
+                      _buildCampaignCodeSection(),
+
+                      // Total section
+                      _buildTotalSection(state),
+                      
+                      // Proceed button
+                      _buildProceedButton(state),
+                    ],
                   ),
 
-                  // Campaign code section
-                  _buildCampaignCodeSection(),
-
-                  // Total section
-                  _buildTotalSection(state),
-                  
-                  // Proceed button
-                  _buildProceedButton(state),
+                  // Maps floating action button
+                  Positioned(
+                    bottom: 100,
+                    right: 20,
+                    child: FloatingActionButton(
+                      onPressed: () => _openMaps(context),
+                      backgroundColor: AppColors.redAccent,
+                      foregroundColor: AppColors.white,
+                      heroTag: "maps_btn",
+                      child: const Icon(Icons.location_on),
+                    ),
+                  ),
                 ],
               );
             }
 
-            return const EmptyCartWidget();
+            return Stack(
+              children: [
+                const EmptyCartWidget(),
+                
+                // Maps floating action button (always visible)
+                Positioned(
+                  bottom: 100,
+                  right: 20,
+                  child: FloatingActionButton(
+                    onPressed: () => _openMaps(context),
+                    backgroundColor: AppColors.redAccent,
+                    foregroundColor: AppColors.white,
+                    heroTag: "maps_btn",
+                    child: const Icon(Icons.location_on),
+                  ),
+                ),
+              ],
+            );
           },
         ),
+      ),
+    );
+  }
+
+  void _openMaps(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const MapsPage(),
       ),
     );
   }

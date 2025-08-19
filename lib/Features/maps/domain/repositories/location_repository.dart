@@ -8,4 +8,6 @@ abstract class LocationRepository {
   Stream<UserLocation> getLocationStream();
   Future<void> openAppSettings();
   Future<void> openLocationSettings();
+  Future<List<UserLocation>> getRoutePoints(UserLocation start, UserLocation end);
+  Future<double> getDistanceBetween(UserLocation start, UserLocation end);
 }

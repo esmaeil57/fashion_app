@@ -37,3 +37,27 @@ class LocationUpdated extends LocationState {
 
   const LocationUpdated({required this.location});
 }
+
+class RouteLoaded extends LocationState {
+  final List<UserLocation> routePoints;
+  final double distance;
+  final UserLocation start;
+  final UserLocation end;
+
+  const RouteLoaded({
+    required this.routePoints,
+    required this.distance,
+    required this.start,
+    required this.end,
+  });
+}
+
+class RouteLoading extends LocationState {
+  const RouteLoading();
+}
+
+class RouteError extends LocationState {
+  final String message;
+
+  const RouteError(this.message);
+}

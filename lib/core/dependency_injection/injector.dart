@@ -1,6 +1,7 @@
 //import 'package:fashion/core/datasource/remote/cart/di/cart_injector.dart';
 //import 'package:fashion/core/local_storage/di/local_storage_injector.dart';
 import 'package:fashion/core/network/api/dio_injector.dart';
+import 'package:fashion/features/maps/di/location_injector.dart';
 //import 'package:fashion/features/Home/di/all_categories_injector.dart';
 //import 'package:fashion/features/products_per_category/di/products_per_category_injector.dart';
 //import 'package:fashion/features/product_details/di/product_details_injector.dart';
@@ -37,5 +38,6 @@ Future<void> initInjection() async {
   await productInjector();
   await homepageInjector();
   await favoriteInjector();
+  await locationInjector();
   // await paymentGetwayInjector();
 }
