@@ -4,7 +4,7 @@ import 'package:fashion/features/favorites/data/models/favorite_model.dart';
 import 'package:fashion/features/mainpage/presentation/cubit/navigation_cubit.dart';
 import 'package:fashion/features/mybasket/data/models/cart_item_model.dart';
 import 'package:fashion/core/utils/locale/locale_helper.dart';
-import 'package:fashion/sentry_bloc_observer.dart';
+import 'package:fashion/core/observer/sentry_bloc_observer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fashion/features/mainpage/presentation/widgets/bottom_nav_bar.dart';
