@@ -15,7 +15,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  SentryWidgetsFlutterBinding.ensureInitialized();
   // Set preferred orientations
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
@@ -43,7 +43,7 @@ Future<void> main() async {
     (options) {
       options.dsn =
           'https://aac62771c1bcfd7220abbe4fe98c4e29@o4509864569274368.ingest.us.sentry.io/4509864578121728';
-      options.tracesSampleRate = 0.01;
+      options.tracesSampleRate = 1.0;
       options.debug = true;
     },
     appRunner:

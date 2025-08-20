@@ -61,3 +61,10 @@ class RouteError extends LocationState {
 
   const RouteError(this.message);
 }
+
+// Additional state for when location is being refreshed
+class LocationRefreshing extends LocationState {
+  final UserLocation currentLocation;
+  
+  const LocationRefreshing({required this.currentLocation});
+}

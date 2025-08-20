@@ -1,3 +1,4 @@
+import 'package:fashion/features/maps/presentation/cubit/location_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fashion/core/dependency_injection/injector.dart';
@@ -183,11 +184,15 @@ class _CartPageState extends State<CartPage> {
   }
 
   void _openMaps(BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => const MapsPage(),
+    Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (_) => BlocProvider(
+        create: (_) => injector<LocationCubit>()..initializeLocation(),
+        child: MapsPageContent(), 
       ),
-    );
+    ),
+  );
   }
 
   PreferredSizeWidget _buildAppBar(BuildContext context) {
