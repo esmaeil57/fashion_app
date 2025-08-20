@@ -1,10 +1,11 @@
+import 'package:fashion/core/utils/config/config_helper.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class DirectionsService {
   static const String _baseUrl = 'https://maps.googleapis.com/maps/api/directions/json';
-  static const String _apiKey = 'YOUR_GOOGLE_MAPS_API_KEY'; // Replace with your API key
+  final  Future<String> _apiKey = ConfigHelper.getMapsApiKey();
 
   Future<Map<String, dynamic>> getDirections({
     required LatLng origin,
