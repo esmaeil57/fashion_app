@@ -1,12 +1,13 @@
 import 'package:fashion/core/utils/styles/color/app_colors.dart';
+import 'package:fashion/features/maps/presentation/widgets/current_location_button.dart';
+import 'package:fashion/features/maps/presentation/widgets/location_info_bottom_sheet.dart';
+import 'package:fashion/features/maps/presentation/widgets/route_options_buttom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../../domain/entities/user_location.dart';
 import '../cubit/location_cubit.dart';
 import '../cubit/location_state.dart';
-import 'current_location_button.dart';
-import 'location_info_bottom_sheet.dart';
 
 class MapsView extends StatefulWidget {
   const MapsView({super.key});
@@ -20,6 +21,7 @@ class _MapsViewState extends State<MapsView> {
   Set<Marker> _markers = {};
   Set<Polyline> _polylines = {};
   UserLocation? _currentLocation;
+  UserLocation? _selectedLocation;
 
   @override
   Widget build(BuildContext context) {
@@ -43,20 +45,63 @@ class _MapsViewState extends State<MapsView> {
             ),
             markers: _markers,
             polylines: _polylines,
-            myLocationEnabled: true, // We'll use custom marker
+            myLocationEnabled: true, 
             myLocationButtonEnabled: false, // We'll use custom button
             compassEnabled: true,
             mapToolbarEnabled: false,
             zoomControlsEnabled: false,
             onTap: _onMapTapped,
+            onLongPress: _onMapLongPressed,
           ),
           
           // Custom Current Location Button
           Positioned(
             bottom: 100,
             right: 16,
-            child: CurrentLocationButton(
-              onPressed: _moveToCurrentLocation,
+            child: Column(
+              children: [
+                // Clear Route Button (show only when route is active)
+                if (_polylines.isNotEmpty || _selectedLocation != null)
+                  Container(
+                    margin: const EdgeInsets.only(bottom: 8),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.2),
+                          spreadRadius: 1,
+                          blurRadius: 4,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: _clearSelection,
+                        borderRadius: BorderRadius.circular(30),
+                        child: Container(
+                          width: 56,
+                          height: 56,
+                          decoration: const BoxDecoration(
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.clear,
+                            color: Colors.red,
+                            size: 24,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                
+                // Current Location Button
+                CurrentLocationButton(
+                  onPressed: _moveToCurrentLocation,
+                ),
+              ],
             ),
           ),
           
@@ -74,6 +119,16 @@ class _MapsViewState extends State<MapsView> {
                 onPressed: () => Navigator.pop(context),
               ),
             ),
+          ),
+          
+          // Route Info Card (show when route is loaded)
+          BlocBuilder<LocationCubit, LocationState>(
+            builder: (context, state) {
+              if (state is RouteLoaded) {
+                return _buildRouteInfoCard(state.distance);
+              }
+              return const SizedBox.shrink();
+            },
           ),
         ],
       ),
@@ -93,22 +148,52 @@ class _MapsViewState extends State<MapsView> {
   void _updateCurrentLocation(UserLocation location) {
     setState(() {
       _currentLocation = location;
-      _markers = {
-        Marker(
-          markerId: const MarkerId('current_location'),
-          position: LatLng(location.latitude, location.longitude),
-          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
-          infoWindow: InfoWindow(
-            title: 'Current Location',
-            snippet: 'Lat: ${location.latitude.toStringAsFixed(6)}, '
-                    'Lng: ${location.longitude.toStringAsFixed(6)}',
-            onTap: () => _showLocationInfo(location),
-          ),
-        ),
-      };
+      _updateMarkers();
     });
 
-    _animateToLocation(location);
+    // Only animate to location if no selected location
+    if (_selectedLocation == null) {
+      _animateToLocation(location);
+    }
+  }
+
+  void _updateMarkers() {
+    setState(() {
+      _markers = {};
+      
+      // Add current location marker
+      if (_currentLocation != null) {
+        _markers.add(
+          Marker(
+            markerId: const MarkerId('current_location'),
+            position: LatLng(_currentLocation!.latitude, _currentLocation!.longitude),
+            icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+            infoWindow: InfoWindow(
+              title: 'Your Location',
+              snippet: 'Current position',
+              onTap: () => _showLocationInfo(_currentLocation!),
+            ),
+          ),
+        );
+      }
+      
+      // Add selected location marker
+      if (_selectedLocation != null) {
+        _markers.add(
+          Marker(
+            markerId: const MarkerId('selected_location'),
+            position: LatLng(_selectedLocation!.latitude, _selectedLocation!.longitude),
+            icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+            infoWindow: InfoWindow(
+              title: 'Selected Location',
+              snippet: 'Tap for route options',
+              onTap: () => _showRouteOptions(_selectedLocation!),
+            ),
+            onTap: () => _showRouteOptions(_selectedLocation!),
+          ),
+        );
+      }
+    });
   }
 
   void _showRoute(RouteLoaded routeState) {
@@ -122,24 +207,6 @@ class _MapsViewState extends State<MapsView> {
           color: AppColors.red,
           width: 5,
           patterns: [], // Solid line
-        ),
-      };
-      
-      _markers = {
-        Marker(
-          markerId: const MarkerId('start'),
-          position: LatLng(routeState.start.latitude, routeState.start.longitude),
-          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
-          infoWindow: const InfoWindow(title: 'Start'),
-        ),
-        Marker(
-          markerId: const MarkerId('end'),
-          position: LatLng(routeState.end.latitude, routeState.end.longitude),
-          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
-          infoWindow: InfoWindow(
-            title: 'Destination',
-            snippet: 'Distance: ${routeState.distance.toStringAsFixed(2)} km',
-          ),
         ),
       };
     });
@@ -169,21 +236,73 @@ class _MapsViewState extends State<MapsView> {
   }
 
   void _onMapTapped(LatLng position) {
-    // Clear route when user taps on map
-    final cubit = context.read<LocationCubit>();
-    if (cubit.state is RouteLoaded) {
-      cubit.clearRoute();
+    // Set selected location on tap
+    setState(() {
+      _selectedLocation = UserLocation(
+        latitude: position.latitude,
+        longitude: position.longitude,
+        timestamp: DateTime.now().millisecondsSinceEpoch,
+      );
+    });
+    
+    // Clear any existing route
+    if (_polylines.isNotEmpty) {
+      context.read<LocationCubit>().clearRoute();
       setState(() {
         _polylines.clear();
       });
     }
+    
+    _updateMarkers();
+    if (_selectedLocation != null) {
+      _showRouteOptions(_selectedLocation!);
+    }
+  }
+
+  void _onMapLongPressed(LatLng position) {
+    // Alternative way to select location with long press
+    _onMapTapped(position);
   }
 
   void _showLocationInfo(UserLocation location) {
     showModalBottomSheet(
       context: context,
-      builder: (context) => LocationInfoBottomSheet(location: location),
+      builder: (modalContext) => LocationInfoBottomSheet(location: location),
     );
+  }
+
+   
+  void _showRouteOptions(UserLocation selectedLocation) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => RouteOptionsBottomSheet(
+        currentLocation: _currentLocation ?? UserLocation(latitude: 0, longitude: 0, timestamp: DateTime.now().millisecondsSinceEpoch),
+        selectedLocation: selectedLocation,
+        onGetRoute: () {},
+        onClearSelection: _clearSelection,
+        onRouteFound: (directions) {
+          setState(() {
+            _polylines.add(
+              Polyline(
+                polylineId: const PolylineId('route'),
+                points: directions.polylinePoints,
+                color: AppColors.red,
+                width: 5,
+              ),
+            );
+          });
+        },
+      ),
+    );
+  }
+  void _clearSelection() {
+    setState(() {
+      _selectedLocation = null;
+      _polylines.clear();
+    });
+    
+    context.read<LocationCubit>().clearRoute();
+    _updateMarkers();
   }
 
   void _fitRouteInView(List<UserLocation> routePoints) {
@@ -208,6 +327,60 @@ class _MapsViewState extends State<MapsView> {
           northeast: LatLng(maxLat, maxLng),
         ),
         100.0, // padding
+      ),
+    );
+  }
+
+  Widget _buildRouteInfoCard(double distance) {
+    return Positioned(
+      top: 100,
+      left: 16,
+      right: 16,
+      child: Card(
+        elevation: 4,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              const Icon(
+                Icons.route,
+                color: AppColors.red,
+                size: 24,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Route Distance',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                      ),
+                    ),
+                    Text(
+                      '${distance.toStringAsFixed(2)} km',
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.red,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              IconButton(
+                icon: const Icon(Icons.close),
+                onPressed: _clearSelection,
+                iconSize: 20,
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
