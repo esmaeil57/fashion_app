@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter_config/flutter_config.dart';
 import 'package:http/http.dart' as http;
 import 'package:location/location.dart';
 import 'package:geolocator/geolocator.dart';
@@ -13,14 +14,19 @@ abstract class LocationDataSource {
   Stream<UserLocationModel> getLocationStream();
   Future<void> openAppSettings();
   Future<void> openLocationSettings();
-  Future<List<UserLocationModel>> getRoutePoints(UserLocationModel start, UserLocationModel end);
-  Future<double> getDistanceBetween(UserLocationModel start, UserLocationModel end);
+  Future<List<UserLocationModel>> getRoutePoints(
+    UserLocationModel start,
+    UserLocationModel end,
+  );
+  Future<double> getDistanceBetween(
+    UserLocationModel start,
+    UserLocationModel end,
+  );
 }
 
 class LocationDataSourceImpl implements LocationDataSource {
   final Location _location = Location();
-  static const String _googleMapsApiKey = 'YOUR_GOOGLE_MAPS_API_KEY'; // Add your API key here
-
+  final  String _googleMapsApiKey = FlutterConfig.get('MAPS_API_KEY');
   @override
   Future<bool> requestLocationPermission() async {
     return await LocationPermissionHelper.requestLocationPermission();
@@ -67,25 +73,29 @@ class LocationDataSourceImpl implements LocationDataSource {
   }
 
   @override
-  Future<List<UserLocationModel>> getRoutePoints(UserLocationModel start, UserLocationModel end) async {
+  Future<List<UserLocationModel>> getRoutePoints(
+    UserLocationModel start,
+    UserLocationModel end,
+  ) async {
     try {
       // Using Google Directions API to get route points
-      final url = 'https://maps.googleapis.com/maps/api/directions/json'
+      final url =
+          'https://maps.googleapis.com/maps/api/directions/json'
           '?origin=${start.latitude},${start.longitude}'
           '&destination=${end.latitude},${end.longitude}'
           '&key=$_googleMapsApiKey';
 
       final response = await http.get(Uri.parse(url));
-      
+
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        
+
         if (data['status'] == 'OK' && data['routes'].isNotEmpty) {
           final points = data['routes'][0]['overview_polyline']['points'];
           return _decodePolyline(points);
         }
       }
-      
+
       // Fallback: return direct line between points
       return [start, end];
     } catch (e) {
@@ -94,7 +104,10 @@ class LocationDataSourceImpl implements LocationDataSource {
   }
 
   @override
-  Future<double> getDistanceBetween(UserLocationModel start, UserLocationModel end) async {
+  Future<double> getDistanceBetween(
+    UserLocationModel start,
+    UserLocationModel end,
+  ) async {
     try {
       final distanceInMeters = Geolocator.distanceBetween(
         start.latitude,
@@ -102,7 +115,7 @@ class LocationDataSourceImpl implements LocationDataSource {
         end.latitude,
         end.longitude,
       );
-      
+
       return distanceInMeters / 1000; // Convert to kilometers
     } catch (e) {
       throw Exception('Failed to calculate distance: $e');
@@ -134,10 +147,7 @@ class LocationDataSourceImpl implements LocationDataSource {
       int dlng = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
       lng += dlng;
 
-      points.add(UserLocationModel(
-        latitude: lat / 1E5,
-        longitude: lng / 1E5,
-      ));
+      points.add(UserLocationModel(latitude: lat / 1E5, longitude: lng / 1E5));
     }
 
     return points;
