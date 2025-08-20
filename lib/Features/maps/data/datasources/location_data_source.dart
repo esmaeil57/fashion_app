@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:flutter_config/flutter_config.dart';
+import 'package:fashion/core/utils/config/config_helper.dart';
 import 'package:http/http.dart' as http;
 import 'package:location/location.dart';
 import 'package:geolocator/geolocator.dart';
@@ -26,7 +26,7 @@ abstract class LocationDataSource {
 
 class LocationDataSourceImpl implements LocationDataSource {
   final Location _location = Location();
-  final  String _googleMapsApiKey = FlutterConfig.get('MAPS_API_KEY');
+  final Future<String> _googleMapsApiKey = ConfigHelper.getMapsApiKey();
   @override
   Future<bool> requestLocationPermission() async {
     return await LocationPermissionHelper.requestLocationPermission();
@@ -78,12 +78,12 @@ class LocationDataSourceImpl implements LocationDataSource {
     UserLocationModel end,
   ) async {
     try {
-      // Using Google Directions API to get route points
+      final key = await _googleMapsApiKey;
       final url =
           'https://maps.googleapis.com/maps/api/directions/json'
           '?origin=${start.latitude},${start.longitude}'
           '&destination=${end.latitude},${end.longitude}'
-          '&key=$_googleMapsApiKey';
+          '&key=$key';
 
       final response = await http.get(Uri.parse(url));
 

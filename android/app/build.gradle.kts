@@ -20,20 +20,24 @@ android {
     }
 
     defaultConfig {
-    applicationId = "com.example.fashion"
-    minSdk = flutter.minSdkVersion
-    targetSdk = flutter.targetSdkVersion
-    versionCode = flutter.versionCode
-    versionName = flutter.versionName
-    manifestPlaceholders.put(
-        "MAPS_API_KEY",
-        project.findProperty("MAPS_API_KEY") ?: ""
-    )
+        applicationId = "com.example.fashion"
+        minSdk = flutter.minSdkVersion
+        targetSdk = flutter.targetSdkVersion
+        versionCode = flutter.versionCode
+        versionName = flutter.versionName
 
-    // Expose API key to Dart
-    buildConfigField "String", "MAPS_API_KEY", "\"${project.findProperty("MAPS_API_KEY") ?: ""}\""
-}
+        manifestPlaceholders["MAPS_API_KEY"] = project.findProperty("MAPS_API_KEY") ?: ""
 
+        buildConfigField(
+            "String",
+            "MAPS_API_KEY",
+            "\"${project.findProperty("MAPS_API_KEY") ?: ""}\""
+        )
+    }
+
+    buildFeatures {
+        buildConfig = true   // ✅ enable BuildConfig
+    }
 
     buildTypes {
         release {
