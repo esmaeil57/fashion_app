@@ -46,7 +46,7 @@ class _MapsViewState extends State<MapsView> {
             markers: _markers,
             polylines: _polylines,
             myLocationEnabled: true, 
-            myLocationButtonEnabled: false, // We'll use custom button
+            myLocationButtonEnabled: false, 
             compassEnabled: true,
             mapToolbarEnabled: false,
             zoomControlsEnabled: false,
