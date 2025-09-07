@@ -291,7 +291,9 @@ Future<void> _getRoute(BuildContext context) async {
       onRouteFound(routeDirections);
       
       Navigator.pop(context);
-    } catch (e) {
+    } catch (e,stacktrace) {
+      debugPrint("Error in _getRoute: $e");
+  debugPrintStack(stackTrace: stacktrace);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Failed to get route directions'),
