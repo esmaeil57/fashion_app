@@ -39,7 +39,9 @@ class _CartPageState extends State<CartPage> {
             if (state is CartItemAdded) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text('${state.productName} added to cart (${state.quantity})'),
+                  content: Text(
+                    '${state.productName} added to cart (${state.quantity})',
+                  ),
                   backgroundColor: Colors.green,
                   duration: const Duration(seconds: 2),
                 ),
@@ -55,7 +57,9 @@ class _CartPageState extends State<CartPage> {
             } else if (state is CartItemUpdated) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text('${state.productName} quantity updated to ${state.newQuantity}'),
+                  content: Text(
+                    '${state.productName} quantity updated to ${state.newQuantity}',
+                  ),
                   backgroundColor: Colors.blue,
                   duration: const Duration(seconds: 1),
                 ),
@@ -104,7 +108,7 @@ class _CartPageState extends State<CartPage> {
                     children: [
                       // Extra discount banner
                       _buildDiscountBanner(),
-                      
+
                       // Cart items list
                       Expanded(
                         child: ListView.builder(
@@ -117,7 +121,10 @@ class _CartPageState extends State<CartPage> {
                               child: CartItemCard(
                                 item: item,
                                 onQuantityChanged: (newQuantity) {
-                                  context.read<CartCubit>().updateItemQuantity(item, newQuantity);
+                                  context.read<CartCubit>().updateItemQuantity(
+                                    item,
+                                    newQuantity,
+                                  );
                                 },
                                 onRemove: () {
                                   context.read<CartCubit>().removeItemFromCart(
@@ -137,47 +144,31 @@ class _CartPageState extends State<CartPage> {
 
                       // Total section
                       _buildTotalSection(state),
-                      
+
                       // Proceed button
                       _buildProceedButton(state),
                     ],
                   ),
-
-                  // Maps floating action button
-                  Positioned(
-                    bottom: 100,
-                    right: 20,
-                    child: FloatingActionButton(
-                      onPressed: () => _openMaps(context),
-                      backgroundColor: AppColors.redAccent,
-                      foregroundColor: AppColors.white,
-                      heroTag: "maps_btn",
-                      child: const Icon(Icons.location_on),
-                    ),
-                  ),
                 ],
               );
             }
+            return SizedBox();
+            // return Stack(
+            //   children: [
+            //     const EmptyCartWidget(),
 
-            return Stack(
-              children: [
-                const EmptyCartWidget(),
-                
-                // Maps floating action button (always visible)
-                Positioned(
-                  bottom: 100,
-                  right: 20,
-                  child: FloatingActionButton(
-                    onPressed: () => _openMaps(context),
-                    backgroundColor: AppColors.redAccent,
-                    foregroundColor: AppColors.white,
-                    heroTag: "maps_btn",
-                    child: const Icon(Icons.location_on),
-                  ),
-                ),
-              ],
-            );
+            //     // Maps floating action button (always visible)
+
+            //   ],
+            // );
           },
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () => _openMaps(context),
+          backgroundColor: AppColors.redAccent,
+          foregroundColor: AppColors.white,
+          heroTag: "maps_btn",
+          child: const Icon(Icons.location_on),
         ),
       ),
     );
@@ -185,14 +176,15 @@ class _CartPageState extends State<CartPage> {
 
   void _openMaps(BuildContext context) {
     Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (_) => BlocProvider(
-        create: (_) => injector<LocationCubit>()..initializeLocation(),
-        child: MapsPageContent(), 
+      context,
+      MaterialPageRoute(
+        builder:
+            (_) => BlocProvider(
+              create: (_) => injector<LocationCubit>()..initializeLocation(),
+              child: MapsPageContent(),
+            ),
       ),
-    ),
-  );
+    );
   }
 
   PreferredSizeWidget _buildAppBar(BuildContext context) {
@@ -211,15 +203,15 @@ class _CartPageState extends State<CartPage> {
             children: [
               Text(
                 'My Shopping Cart',
-                style: AppStyles.styleMedium18(context).copyWith(
-                  color: AppColors.black,
-                ),
+                style: AppStyles.styleMedium18(
+                  context,
+                ).copyWith(color: AppColors.black),
               ),
               Text(
                 '($itemCount Products)',
-                style: AppStyles.styleRegular14(context).copyWith(
-                  color: AppColors.gray,
-                ),
+                style: AppStyles.styleRegular14(
+                  context,
+                ).copyWith(color: AppColors.gray),
               ),
             ],
           );
@@ -239,9 +231,9 @@ class _CartPageState extends State<CartPage> {
       ),
       child: Text(
         'Get extra 5% off at cart on app! Only for credit card payments!',
-        style: AppStyles.styleRegular14(context).copyWith(
-          color: AppColors.black,
-        ),
+        style: AppStyles.styleRegular14(
+          context,
+        ).copyWith(color: AppColors.black),
         textAlign: TextAlign.center,
       ),
     );
@@ -257,9 +249,9 @@ class _CartPageState extends State<CartPage> {
               controller: _campaignController,
               decoration: InputDecoration(
                 hintText: 'Campaign Code',
-                hintStyle: AppStyles.styleRegular14(context).copyWith(
-                  color: AppColors.gray,
-                ),
+                hintStyle: AppStyles.styleRegular14(
+                  context,
+                ).copyWith(color: AppColors.gray),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                   borderSide: BorderSide(color: AppColors.borderColor),
@@ -302,9 +294,9 @@ class _CartPageState extends State<CartPage> {
               ),
               child: Text(
                 'Use',
-                style: AppStyles.styleRegular14(context).copyWith(
-                  color: AppColors.black,
-                ),
+                style: AppStyles.styleRegular14(
+                  context,
+                ).copyWith(color: AppColors.black),
               ),
             ),
           ),
@@ -327,15 +319,15 @@ class _CartPageState extends State<CartPage> {
         children: [
           Text(
             'GRAND TOTAL',
-            style: AppStyles.styleBold16(context).copyWith(
-              color: AppColors.black,
-            ),
+            style: AppStyles.styleBold16(
+              context,
+            ).copyWith(color: AppColors.black),
           ),
           Text(
             '${state.total.toStringAsFixed(2)} EGP',
-            style: AppStyles.styleBold16(context).copyWith(
-              color: AppColors.black,
-            ),
+            style: AppStyles.styleBold16(
+              context,
+            ).copyWith(color: AppColors.black),
           ),
         ],
       ),
@@ -355,17 +347,14 @@ class _CartPageState extends State<CartPage> {
           backgroundColor: AppColors.redAccent,
           foregroundColor: AppColors.white,
           padding: const EdgeInsets.symmetric(vertical: 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           elevation: 0,
         ),
         child: Text(
           'PROCEED TO PAYMENT',
-          style: AppStyles.styleMedium16(context).copyWith(
-            color: AppColors.white,
-            letterSpacing: 0.5,
-          ),
+          style: AppStyles.styleMedium16(
+            context,
+          ).copyWith(color: AppColors.white, letterSpacing: 0.5),
         ),
       ),
     );

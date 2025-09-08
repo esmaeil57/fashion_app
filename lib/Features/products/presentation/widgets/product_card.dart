@@ -1,7 +1,8 @@
 import 'package:fashion/core/shared_widgets/shimmer_widget.dart';
 import 'package:fashion/features/favorites/presentation/cubit/favorite_cubit.dart';
 import 'package:fashion/features/favorites/presentation/cubit/favorite_state.dart';
-import 'package:fashion/features/products/presentation/pages/product_details_page.dart';
+import 'package:fashion/features/products_details/presentation/cubit/product_details_cubit.dart';
+import 'package:fashion/features/products_details/presentation/pages/product_details_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fashion/features/products/data/models/product_model.dart';
@@ -32,8 +33,8 @@ class _ProductCardState extends State<ProductCard> {
   final PageController _pageController = PageController();
   bool _isFavorite = false;
   bool _isLoadingFavorite = true;
-  final FavoritesCubit  _favoritesCubit = injector<FavoritesCubit>();
-  
+  final FavoritesCubit _favoritesCubit = injector<FavoritesCubit>();
+
   @override
   void initState() {
     super.initState();
@@ -104,10 +105,9 @@ class _ProductCardState extends State<ProductCard> {
             },
             child: GestureDetector(
               onTap: () => _navigateToProductDetails(context),
-              child:
-                  widget.isGridView
-                      ? _buildGridCard(context, _isFavorite, isInCart)
-                      : _buildListCard(context, _isFavorite, isInCart),
+              child: widget.isGridView
+                  ? _buildGridCard(context, _isFavorite, isInCart)
+                  : _buildListCard(context, _isFavorite, isInCart),
             ),
           ),
         );
@@ -116,11 +116,15 @@ class _ProductCardState extends State<ProductCard> {
   }
 
   void _navigateToProductDetails(BuildContext context) async {
-    // Navigate to product details and wait for result
+    // Navigate to product details using the separated feature
     await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ProductDetailsPage(product: widget.product),
+        builder: (context) => BlocProvider(
+          create: (_) => injector<ProductDetailsCubit>()
+            ..getProductDetails(widget.product.id),
+          child: ProductDetailsPage(product: widget.product),
+        ),
       ),
     );
     // Refresh favorite status when returning from product details
@@ -131,18 +135,16 @@ class _ProductCardState extends State<ProductCard> {
     if (state is ProductLoaded) {
       return state.products.firstWhere(
         (p) => p.id == widget.product.id,
-        orElse:
-            () =>
-                widget.product is ProductModel
-                    ? widget.product as ProductModel
-                    : ProductModel(
-                      id: widget.product.id,
-                      name: widget.product.name,
-                      imageUrls: widget.product.imageUrls,
-                      price: widget.product.price,
-                      categoryId: widget.product.categoryId,
-                      categoryName: widget.product.categoryName,
-                    ),
+        orElse: () => widget.product is ProductModel
+            ? widget.product as ProductModel
+            : ProductModel(
+                id: widget.product.id,
+                name: widget.product.name,
+                imageUrls: widget.product.imageUrls,
+                price: widget.product.price,
+                categoryId: widget.product.categoryId,
+                categoryName: widget.product.categoryName,
+              ),
       );
     }
     return null;
@@ -321,46 +323,45 @@ class _ProductCardState extends State<ProductCard> {
         Positioned(
           top: 12,
           right: 12,
-          child:
-              _isLoadingFavorite
-                  ? Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          blurRadius: 4,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: const Center(
-                      child: SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                            Colors.grey,
-                          ),
+          child: _isLoadingFavorite
+              ? Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 4,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: const Center(
+                    child: SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          Colors.grey,
                         ),
                       ),
                     ),
-                  )
-                  : _buildIconButton(
-                    Icons.favorite,
-                    Icons.favorite_border,
-                    isFavorite,
-                    () {
-                      if (!_isLoadingFavorite) {
-                        _favoritesCubit.toggleFavorite(widget.product);
-                      }
-                    },
-                    backgroundColor: Colors.white,
                   ),
+                )
+              : _buildIconButton(
+                  Icons.favorite,
+                  Icons.favorite_border,
+                  isFavorite,
+                  () {
+                    if (!_isLoadingFavorite) {
+                      _favoritesCubit.toggleFavorite(widget.product);
+                    }
+                  },
+                  backgroundColor: Colors.white,
+                ),
         ),
         // Cart button
         Positioned(
@@ -484,10 +485,9 @@ class _ProductCardState extends State<ProductCard> {
 
     return PageView.builder(
       controller: _pageController,
-      itemCount:
-          widget.product.imageUrls.length > 6
-              ? 6
-              : widget.product.imageUrls.length,
+      itemCount: widget.product.imageUrls.length > 6
+          ? 6
+          : widget.product.imageUrls.length,
       onPageChanged: (index) {
         setState(() {
           _currentImageIndex = index;
@@ -512,11 +512,10 @@ class _ProductCardState extends State<ProductCard> {
               ),
             );
           },
-          errorBuilder:
-              (context, error, stackTrace) => Container(
-                color: Colors.grey[200],
-                child: const Icon(Icons.image, size: 50, color: Colors.grey),
-              ),
+          errorBuilder: (context, error, stackTrace) => Container(
+            color: Colors.grey[200],
+            child: const Icon(Icons.image, size: 50, color: Colors.grey),
+          ),
         );
       },
     );
@@ -528,17 +527,16 @@ class _ProductCardState extends State<ProductCard> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder:
-          (_) => Container(
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-            ),
-            child: BlocProvider.value(
-              value: cubit,
-              child: ProductQuickReview(product: widget.product),
-            ),
-          ),
+      builder: (_) => Container(
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        child: BlocProvider.value(
+          value: cubit,
+          child: ProductQuickReview(product: widget.product),
+        ),
+      ),
     ).whenComplete(() {
       context.read<ProductCubit>().clearSelections();
     });

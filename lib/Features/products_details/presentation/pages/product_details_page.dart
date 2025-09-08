@@ -2,21 +2,20 @@ import 'package:fashion/features/favorites/presentation/cubit/favorite_cubit.dar
 import 'package:fashion/features/favorites/presentation/cubit/favorite_state.dart';
 import 'package:fashion/features/mybasket/presentation/cubit/cart_cubit.dart';
 import 'package:fashion/features/mybasket/presentation/pages/cart_page.dart';
+import 'package:fashion/features/products/domain/entities/product.dart';
+import 'package:fashion/features/products_details/presentation/widgets/prduct_details_widgets/color_section.dart';
+import 'package:fashion/features/products_details/presentation/widgets/prduct_details_widgets/description_section.dart';
+import 'package:fashion/features/products_details/presentation/widgets/prduct_details_widgets/payment_options.dart';
+import 'package:fashion/features/products_details/presentation/widgets/prduct_details_widgets/product_header.dart';
+import 'package:fashion/features/products_details/presentation/widgets/prduct_details_widgets/product_image.dart';
+import 'package:fashion/features/products_details/presentation/widgets/prduct_details_widgets/return_policy.dart';
+import 'package:fashion/features/products_details/presentation/widgets/prduct_details_widgets/size_section.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fashion/core/utils/styles/color/app_colors.dart';
 import 'package:fashion/core/dependency_injection/injector.dart';
-import 'package:fashion/features/products/domain/entities/product.dart';
-import 'package:fashion/features/products/presentation/cubit/product_cubit.dart';
-import 'package:fashion/features/products/presentation/cubit/product_state.dart';
-import 'package:fashion/features/products/presentation/widgets/prduct_details_widgets/color_section.dart';
-import 'package:fashion/features/products/presentation/widgets/prduct_details_widgets/description_section.dart';
-import 'package:fashion/features/products/presentation/widgets/prduct_details_widgets/payment_options.dart';
-import 'package:fashion/features/products/presentation/widgets/prduct_details_widgets/product_details_info.dart';
-import 'package:fashion/features/products/presentation/widgets/prduct_details_widgets/product_header.dart';
-import 'package:fashion/features/products/presentation/widgets/prduct_details_widgets/product_image.dart';
-import 'package:fashion/features/products/presentation/widgets/prduct_details_widgets/return_policy.dart';
-import 'package:fashion/features/products/presentation/widgets/prduct_details_widgets/size_section.dart';
+import 'package:fashion/features/products_details/presentation/cubit/product_details_cubit.dart';
+import 'package:fashion/features/products_details/presentation/cubit/product_details_state.dart';
 
 class ProductDetailsPage extends StatefulWidget {
   final Product product;
@@ -42,7 +41,9 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
 
   void _checkFavoriteStatus() async {
     setState(() => _isLoadingFavorite = true);
-    final isFav = await _favoritesCubit.checkIsFavorite(widget.product.id);
+    final isFav = await _favoritesCubit.checkIsFavorite(
+      widget.product.id.toString(),
+    );
     if (mounted) {
       setState(() {
         _isFavorite = isFav;
@@ -61,12 +62,14 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
   @override
   Widget build(BuildContext context) {
     final List<String> limitedImageUrls =
-        widget.product.imageUrls.take(5).toList();
+        widget.product.imageUrls
+            .take(5)
+            .toList(); // Change from images! to imageUrls
     return MultiBlocProvider(
       providers: [
         BlocProvider(
           create: (_) {
-            final cubit = injector<ProductCubit>();
+            final cubit = injector<ProductDetailsCubit>();
             cubit.initializeForSingleProduct(); // Initialize for single product
             return cubit;
           },
@@ -231,8 +234,6 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                               const SizedBox(height: 20),
                               DescriptionSection(product: widget.product),
                               const SizedBox(height: 20),
-                              ProductDetailsInfo(product: widget.product),
-                              const SizedBox(height: 20),
                               const ReturnPolicy(),
                               const SizedBox(height: 20),
                               const PaymentOptions(),
@@ -359,7 +360,10 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                               const SizedBox(width: 12),
                               // Add to Cart Button
                               Expanded(
-                                child: BlocBuilder<ProductCubit, ProductState>(
+                                child: BlocBuilder<
+                                  ProductDetailsCubit,
+                                  ProductDetailsState
+                                >(
                                   builder: (context, state) {
                                     // Check if selections are required and made
                                     final needsSize =

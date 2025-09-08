@@ -2,7 +2,8 @@ import 'package:fashion/core/dependency_injection/injector.dart';
 import 'package:fashion/core/utils/styles/color/app_colors.dart';
 import 'package:fashion/features/mybasket/presentation/cubit/cart_cubit.dart';
 import 'package:fashion/features/mybasket/presentation/pages/cart_page.dart';
-import 'package:fashion/features/products/presentation/pages/product_details_page.dart';
+import 'package:fashion/features/products_details/presentation/cubit/product_details_cubit.dart';
+import 'package:fashion/features/products_details/presentation/pages/product_details_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../domain/entities/product.dart';
@@ -69,9 +70,11 @@ class _ProductQuickReviewState extends State<ProductQuickReview> {
                   ),
                 ),
                 GestureDetector(
-                  onTap: () => {
-                    context.read<ProductCubit>().clearSelections(),
-                    Navigator.of(context).pop(),},
+                  onTap:
+                      () => {
+                        context.read<ProductCubit>().clearSelections(),
+                        Navigator.of(context).pop(),
+                      },
                   child: const Text(
                     'Cancel',
                     style: TextStyle(
@@ -342,8 +345,16 @@ class _ProductQuickReviewState extends State<ProductQuickReview> {
                             context,
                             MaterialPageRoute(
                               builder:
-                                  (context) => ProductDetailsPage(
-                                    product: widget.product,
+                                  (context) => BlocProvider(
+                                    create:
+                                        (_) =>
+                                            injector<ProductDetailsCubit>()
+                                              ..getProductDetails(
+                                                widget.product.id,
+                                              ),
+                                    child: ProductDetailsPage(
+                                      product: widget.product,
+                                    ),
                                   ),
                             ),
                           );

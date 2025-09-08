@@ -78,6 +78,7 @@ class LocationDataSourceImpl implements LocationDataSource {
     UserLocationModel end,
   ) async {
     try {
+      print('Mapppppppp###############');
       final key = await _googleMapsApiKey;
       final url =
           'https://maps.googleapis.com/maps/api/directions/json'
@@ -109,6 +110,7 @@ class LocationDataSourceImpl implements LocationDataSource {
     UserLocationModel end,
   ) async {
     try {
+      print("Tesssssssssssst#####################################");
       final distanceInMeters = Geolocator.distanceBetween(
         start.latitude,
         start.longitude,

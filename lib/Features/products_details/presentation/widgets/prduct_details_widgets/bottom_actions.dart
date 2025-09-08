@@ -1,12 +1,12 @@
+import 'package:fashion/features/products_details/data/models/product_model.dart';
+import 'package:fashion/features/products_details/presentation/cubit/product_details_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fashion/core/utils/styles/color/app_colors.dart';
 import 'package:fashion/core/utils/styles/fonts/app_styles.dart';
-import 'package:fashion/features/products/domain/entities/product.dart';
-import 'package:fashion/features/products/presentation/cubit/product_cubit.dart';
 
 class BottomActions extends StatelessWidget {
-  final Product product;
+  final ProductDetailsModel product;
 
   const BottomActions({super.key, required this.product});
 
@@ -30,11 +30,13 @@ class BottomActions extends StatelessWidget {
             Expanded(
               child: ElevatedButton(
                 onPressed: () {
-                  context.read<ProductCubit>().toggleCart(product.id);
+                  context.read<ProductDetailsCubit>().toggleCart(product.id ?? 0);
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text(
-                        product.isAddedToCart ? 'Removed from cart' : 'Added to cart',
+                        product.isAddedToCart
+                            ? 'Removed from cart'
+                            : 'Added to cart',
                       ),
                       backgroundColor: AppColors.primary,
                       duration: const Duration(seconds: 2),
@@ -52,7 +54,9 @@ class BottomActions extends StatelessWidget {
                 ),
                 child: Text(
                   'Select Color and size',
-                  style: AppStyles.styleMedium16(context).copyWith(color: AppColors.white),
+                  style: AppStyles.styleMedium16(
+                    context,
+                  ).copyWith(color: AppColors.white),
                 ),
               ),
             ),
